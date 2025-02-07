@@ -1,0 +1,524 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Happy Valentine's Week ❤️</title>
+  <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet" />
+  <style>
+    /* GENERAL STYLES */
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: 'Poppins', sans-serif;
+      background: linear-gradient(to bottom, #ff9a9e, #fad0c4);
+      overflow-x: hidden;
+    }
+
+    /* HERO SECTION */
+.hero {
+  position: relative;
+  height: 100vh;
+  background: linear-gradient(135deg, #ff9a9e, #fad0c4);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  color: #fff;
+  overflow: hidden;
+}
+
+/* Text styles */
+.hero h1 {
+  font-family: 'Great Vibes', cursive;
+  font-size: 60px;
+  margin: 0;
+  z-index: 2;
+}
+.hero p.subtitle {
+  font-size: 24px;
+  margin: 10px 0;
+  z-index: 2;
+}
+.hero p.hero-message {
+  font-size: 28px;
+  margin: 5px 0;
+  z-index: 2;
+}
+.scroll-down {
+  position: absolute;
+  bottom: 20px;
+  font-size: 24px;
+  z-index: 2;
+  animation: bounce 2s infinite;
+}
+@keyframes bounce {
+  0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
+  40% { transform: translateY(-10px); }
+  60% { transform: translateY(-5px); }
+}
+
+/* Cloud shape */
+.hero-cloud {
+  position: absolute;
+  top: 20%;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 180px;
+  height: 100px;
+  background: #fff;
+  border-radius: 50px;
+  opacity: 0.8;
+  box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1);
+  animation: floatCloud 6s ease-in-out infinite;
+  z-index: 1;
+}
+@keyframes floatCloud {
+  0% { transform: translate(-50%, 0); }
+  50% { transform: translate(-50%, -10px); }
+  100% { transform: translate(-50%, 0); }
+}
+
+/* Guy shape */
+.hero-guy {
+  position: absolute;
+  bottom: 10%;
+  left: 10%;
+  z-index: 1;
+  animation: float 5s ease-in-out infinite;
+}
+.guy-head {
+  width: 50px;
+  height: 50px;
+  background: #f0c;
+  border-radius: 50%;
+  margin: 0 auto;
+}
+.guy-body {
+  width: 40px;
+  height: 60px;
+  background: #d63384;
+  margin: 5px auto;
+  border-radius: 10px;
+}
+
+/* Girl shape */
+.hero-girl {
+  position: absolute;
+  bottom: 10%;
+  right: 10%;
+  z-index: 1;
+  animation: float 5s ease-in-out infinite;
+  animation-delay: 1s;
+}
+.girl-head {
+  width: 50px;
+  height: 50px;
+  background: #ff7f50;
+  border-radius: 50%;
+  margin: 0 auto;
+}
+.girl-body {
+  width: 40px;
+  height: 60px;
+  background: #d63384;
+  margin: 5px auto;
+  border-radius: 10px;
+}
+
+/* Floating animation for characters */
+@keyframes float {
+  0% { transform: translateY(0); }
+  50% { transform: translateY(-20px); }
+  100% { transform: translateY(0); }
+}
+
+    
+    /* CAROUSEL SECTION */
+    .carousel-section {
+      margin: 20px 0;
+    }
+    .carousel-container {
+      width: 100%;
+      overflow: hidden;
+      white-space: nowrap;
+    }
+    .carousel {
+      display: flex;
+      animation: scroll 15s linear infinite;
+      width: 200%;
+    }
+    .carousel img {
+      width: 300px;
+      height: 200px;
+      object-fit: cover;
+      border-radius: 15px;
+      margin-right: 15px;
+    }
+    @keyframes scroll {
+      0% { transform: translateX(0); }
+      100% { transform: translateX(-50%); }
+    }
+    
+    /* -------------------------------
+       LETTERPAD SECTION
+       ------------------------------- */
+       .letter-section {
+        padding: 40px 20px;
+      }
+      .letter {
+        /* Static container resembling a piece of paper */
+        width: 90%;
+        max-width: 800px;
+        margin: 0 auto;
+        padding: 30px;
+        background: #fff;
+        border: 1px solid #ddd;
+        border-radius: 10px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        font-family: 'Great Vibes', cursive; /* Handwritten look */
+        color: #333;
+        line-height: 1.6;
+        text-align: left;
+        position: relative;
+        /* Optional: Add a subtle paper texture as a background image if available
+           background-image: url('images/paper-texture.png');
+           background-size: cover;
+        */
+      }
+      /* Initially, the paragraphs are empty (their full text is stored in data-text) */
+      .letter p {
+        margin: 15px 0;
+        min-height: 1.2em; /* Prevent layout shift */
+      }
+    /* Sticker Styles with Floating and Glowing Animations */
+    .sticker {
+      width: 50px;
+      position: absolute;
+      animation: float 3s ease-in-out infinite, glowSticker 1.5s ease-in-out infinite alternate;
+    }
+    .sticker-top {
+      top: -10px;
+      right: -10px;
+    }
+    .sticker-bottom {
+      bottom: -10px;
+      left: -10px;
+    }
+    
+    /* INSTRUCTIONS SECTION */
+    .instructions-section {
+      padding: 40px 20px;
+    }
+    .instructions {
+      max-width: 600px;
+      margin: 0 auto;
+      background: #ffe6f0;
+      border: 1px solid #f7c6d2;
+      border-radius: 10px;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+      padding: 20px;
+      text-align: left;
+    }
+    .instruction-item {
+      opacity: 0;
+      transform: translateY(20px);
+      transition: opacity 0.8s ease-out, transform 0.8s ease-out;
+      margin-bottom: 20px;
+    }
+    .instruction-item.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+    
+    /* NAVIGATION TABS SECTION */
+    .tabs-section {
+      padding: 40px 20px;
+    }
+    .nav {
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 15px;
+    }
+    .nav a {
+      background: white;
+      padding: 10px 15px;
+      text-decoration: none;
+      color: #d63384;
+      border-radius: 8px;
+      font-weight: bold;
+      transition: 0.3s;
+    }
+    .nav a:hover {
+      background: #d63384;
+      color: white;
+    }
+    .nav a.disabled {
+      pointer-events: none;
+      opacity: 0.5;
+      cursor: default;
+    }
+    
+    /* MUSIC PLAYER */
+    .music-player {
+      margin: 20px 0;
+      text-align: center;
+    }
+    
+    /* FALLING HEARTS & MESSAGE */
+    .falling-heart {
+      position: fixed;
+      top: -50px;
+      font-size: 25px;
+      color: rgba(255, 0, 102, 0.8);
+      animation: fall linear infinite;
+      cursor: pointer;
+    }
+    .click-heart {
+      color: red;
+      font-size: 30px;
+      font-weight: bold;
+    }
+    @keyframes fall {
+      0% { transform: translateY(0); opacity: 1; }
+      100% { transform: translateY(100vh); opacity: 0; }
+    }
+    .message {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%) scale(0.5);
+      background: white;
+      padding: 20px;
+      border-radius: 15px;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+      opacity: 0;
+      transition: transform 0.5s ease-out, opacity 0.5s ease-out;
+      font-size: 20px;
+    }
+    .message.show {
+      opacity: 1;
+      transform: translate(-50%, -50%) scale(1);
+    }
+  </style>
+</head>
+<body>
+  <!-- HERO SECTION -->
+  <!-- HERO SECTION -->
+<section class="hero">
+  <!-- Cloud shape created with CSS -->
+  <div class="hero-cloud"></div>
+  
+  <!-- Guy represented with CSS shapes -->
+  <div class="hero-guy">
+    <div class="guy-head"></div>
+    <div class="guy-body"></div>
+  </div>
+  
+  <!-- Girl represented with CSS shapes -->
+  <div class="hero-girl">
+    <div class="girl-head"></div>
+    <div class="girl-body"></div>
+  </div>
+  
+  <!-- Text content -->
+  <h1>Cookie &amp; Panda</h1>
+  <p class="subtitle">So far yet so close</p>
+  <p class="hero-message">Happy Valentine’s Week</p>
+  <div class="scroll-down">&#x2193; Scroll down for more</div>
+</section>
+
+  
+  <!-- CAROUSEL SECTION (Images & Falling Hearts) -->
+  <section class="carousel-section">
+    <div class="carousel-container">
+      <div class="carousel">
+        <img src="images/photo1.jpg" alt="Photo 1" />
+        <img src="images/photo2.jpg" alt="Photo 2" />
+        <img src="images/photo3.jpg" alt="Photo 3" />
+        <img src="images/photo4.jpg" alt="Photo 4" />
+        <img src="images/photo5.jpg" alt="Photo 5" />
+        <img src="images/photo6.jpg" alt="Photo 6" />
+      </div>
+    </div>
+  </section>
+  
+  <!-- LETTERPAD SECTION -->
+  <section class="letter-section">
+    <div class="letter">
+      <p data-text="Happy Valentine’s Week, My Cookie!"></p>
+      <p data-text="My Cookie,"></p>
+      <p data-text="From the very first moment, you have been my beginning, my middle, and my forever. Mudhal Nee, Mudivum Nee, Moondru Kaalam Nee."></p>
+      <p data-text="Every mile between us, every night spent apart, every moment I wished I could hold you—none of it has ever lessened my love for you. If anything, the distance has only proven how unbreakable we are, how deeply you are woven into my heart."></p>
+      <p data-text="I know waiting hasn't been easy. I see the patience in your love, the strength in your heart, and the way you hold on to us, no matter how hard it gets. And I promise you, my love, this is the last time. No more waiting, no more distance—just us, together, as it was always meant to be."></p>
+      <p data-text="You are my world, my comfort, my laughter, my peace. You are my warm hug after a long day, my safe place, my ice cream on a bad day (yes, always ice cream for you 🍦). You are the dream I never want to wake up from."></p>
+      <p data-text="So, through this little space I made just for you, I want to remind you that no matter where we are, no matter how far apart, my love for you is constant, infinite, and forever yours."></p>
+      <p data-text="Happy Valentine’s Week, my love. Let this be another small memory in the endless story we are writing together. 💖"></p>
+    </div>
+  </section>
+  
+  <!-- INSTRUCTIONS SECTION (Items appear sequentially) -->
+  <section class="instructions-section">
+    <div class="instructions">
+      <div class="instruction-item">
+        <h2>How to Explore Your Surprise! 🎁</h2>
+      </div>
+      <div class="instruction-item">
+        <h3>💞 Falling Hearts:</h3>
+        <p>Some hearts are just floating around, but if you see one that says "Click Me!", tap on it! Each clickable heart will reveal a hidden message just for you.</p>
+      </div>
+      <div class="instruction-item">
+        <h3>🌹 Valentine's Tabs:</h3>
+        <p>Every day, a new surprise unlocks! For now, only Rose Day is available. Check back every day for a new feel, a new surprise, and a new reason why I love you.</p>
+        <p>Click on Rose Day now to start this journey!</p>
+      </div>
+      <div class="instruction-item">
+        <p>Enjoy every moment, my love. This week is just for us. 💕</p>
+      </div>
+    </div>
+  </section>
+  
+  <!-- NAVIGATION TABS (Only Rose Day clickable; others "Coming Soon") -->
+  <section class="tabs-section">
+    <div class="nav">
+      <a href="day1.html">🌹 Rose Day</a>
+      <a href="#" class="disabled">💍 Propose Day (Coming Soon)</a>
+      <a href="#" class="disabled">🍫 Chocolate Day (Coming Soon)</a>
+      <a href="#" class="disabled">🧸 Teddy Day (Coming Soon)</a>
+      <a href="#" class="disabled">🤞 Promise Day (Coming Soon)</a>
+      <a href="#" class="disabled">🤗 Hug Day (Coming Soon)</a>
+      <a href="#" class="disabled">😘 Kiss Day (Coming Soon)</a>
+      <a href="#" class="disabled">❤️ Valentine's Day (Coming Soon)</a>
+    </div>
+  </section>
+  
+  <!-- MUSIC PLAYER -->
+  <div class="music-player">
+    <audio controls autoplay loop>
+      <source src="music/romantic_song.mp3" type="audio/mpeg" />
+    </audio>
+  </div>
+  
+  <!-- MESSAGE BOX for Clickable Hearts -->
+  <div id="messageBox" class="message"></div>
+  
+  <!-- ------------------------- -->
+  <!-- SCRIPTS -->
+  <!-- ------------------------- -->
+  <script>
+    /* FALLING HEARTS & CLICKABLE HEARTS */
+    function createHeart() {
+      const heart = document.createElement("div");
+      heart.classList.add("falling-heart");
+      heart.innerHTML = "❤️";
+      document.body.appendChild(heart);
+      heart.style.left = Math.random() * 100 + "vw";
+      heart.style.animationDuration = Math.random() * 2 + 3 + "s";
+      setTimeout(() => {
+        heart.remove();
+      }, 5000);
+    }
+    function createClickableHeart() {
+      const heart = document.createElement("div");
+      heart.classList.add("falling-heart", "click-heart");
+      heart.innerHTML = "💖 Click Me!";
+      document.body.appendChild(heart);
+      heart.style.left = Math.random() * 100 + "vw";
+      heart.style.animationDuration = Math.random() * 4 + 5 + "s";
+      heart.addEventListener("click", function () {
+        showMessage();
+        heart.remove();
+      });
+      setTimeout(() => {
+        heart.remove();
+      }, 7000);
+    }
+    function showMessage() {
+      const messages = [
+        "You are my sunshine ☀️",
+        "Every moment with you is special ❤️",
+        "You make my heart race 💕"
+      ];
+      const messageBox = document.getElementById("messageBox");
+      messageBox.innerHTML = messages[Math.floor(Math.random() * messages.length)];
+      messageBox.classList.add("show");
+      setTimeout(() => {
+        messageBox.classList.remove("show");
+      }, 3000);
+    }
+    setInterval(createHeart, 400);
+    setInterval(createClickableHeart, 5000);
+    
+    // Typewriter effect: types text into an element one character at a time.
+    function typeWriter(element, text, i, callback) {
+        if (i < text.length) {
+          element.innerHTML += text.charAt(i);
+          setTimeout(function() {
+            typeWriter(element, text, i + 1, callback);
+          }, 50); // Adjust typing speed here (milliseconds per character)
+        } else if (typeof callback === 'function') {
+          // After the paragraph is complete, wait briefly before calling the callback.
+          setTimeout(callback, 500);
+        }
+      }
+  
+      // Sequentially process paragraphs for the typewriter effect.
+      function startTypewriter(paragraphs, index) {
+        if (index < paragraphs.length) {
+          var p = paragraphs[index];
+          var text = p.getAttribute('data-text');
+          p.innerHTML = ""; // Ensure the paragraph is empty.
+          typeWriter(p, text, 0, function() {
+            startTypewriter(paragraphs, index + 1);
+          });
+        }
+      }
+    function typeParagraphs(paragraphs, current) {
+      if (current < paragraphs.length) {
+        let paragraph = paragraphs[current];
+        let fullText = paragraph.getAttribute("data-fulltext");
+        paragraph.textContent = "";
+        typeWriter(paragraph, fullText, 0, function(){
+          setTimeout(function(){
+            typeParagraphs(paragraphs, current + 1);
+          }, 500);
+        });
+      }
+    }
+    
+    // When the letterpad section scrolls into view, start the typewriter effect.
+    document.addEventListener("DOMContentLoaded", function() {
+        const letter = document.querySelector('.letter');
+        const paragraphs = letter.querySelectorAll('p');
+        
+        const observer = new IntersectionObserver(function(entries, observer) {
+          entries.forEach(entry => {
+            if (entry.isIntersecting) {
+              startTypewriter(Array.from(paragraphs), 0);
+              observer.unobserve(letter);
+            }
+          });
+        }, { threshold: 0.1 });
+        
+        observer.observe(letter);
+      });
+      
+      // Animate each instruction item as it comes into view.
+      const instructionItems = document.querySelectorAll(".instruction-item");
+      const instrObserver = new IntersectionObserver((entries, observer) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add("visible");
+            observer.unobserve(entry.target);
+          }
+        });
+      }, { threshold: 0.1 });
+      instructionItems.forEach((item, index) => {
+        item.style.transitionDelay = `${index * 0.5}s`;
+        instrObserver.observe(item);
+      });
+    
+  </script>
+</body>
+</html>
