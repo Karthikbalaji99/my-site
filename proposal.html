@@ -1,0 +1,959 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Propose Day - Updated</title>
+
+  <!-- Google Font: Great Vibes -->
+  <link
+    href="https://fonts.googleapis.com/css2?family=Great+Vibes&display=swap"
+    rel="stylesheet"
+  />
+
+  <style>
+    /* Basic Resets */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    body {
+      font-family: Arial, sans-serif;
+      overflow-x: hidden;
+      scroll-behavior: smooth;
+      background: #fff;
+    }
+    section {
+      position: relative;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      padding: 3rem 2rem;
+      opacity: 0; /* For IntersectionObserver fade-in */
+      transition: opacity 1s ease;
+    }
+    section.visible {
+      opacity: 1;
+    }
+
+    /* --------------- 1) HERO SECTION --------------- */
+    #hero {
+      background: linear-gradient(120deg, #ffafbd 0%, #ffc3a0 100%);
+      color: #fff;
+      overflow: hidden;
+    }
+    .hero-extra-title {
+      font-family: 'Great Vibes', cursive;
+      font-size: 2rem;
+      margin-bottom: 1rem;
+      opacity: 0;
+      transform: translateY(20px);
+      animation: fadeUp 1s forwards ease-in-out;
+      animation-delay: 0.3s;
+    }
+    #hero h1 {
+      font-family: 'Great Vibes', cursive;
+      font-size: 3rem;
+      margin-bottom: 1rem;
+      opacity: 0;
+      transform: translateY(30px);
+      animation: fadeUp 1s forwards ease-in-out;
+      animation-delay: 0.5s;
+    }
+    #hero p {
+      font-size: 1.2rem;
+      margin-bottom: 2rem;
+      opacity: 0;
+      transform: translateY(30px);
+      animation: fadeUp 1s forwards ease-in-out;
+      animation-delay: 1.5s;
+    }
+    @keyframes fadeUp {
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+    .scroll-indicator {
+      position: absolute;
+      bottom: 2rem;
+      width: 30px;
+      height: 30px;
+      border: 2px solid #fff;
+      border-radius: 50%;
+      animation: bounce 1.5s infinite;
+    }
+    @keyframes bounce {
+      0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
+      40% { transform: translateY(-10px); }
+      60% { transform: translateY(-5px); }
+    }
+    .sparkle {
+      position: absolute;
+      width: 15px;
+      height: 15px;
+      background: radial-gradient(circle, rgba(255,255,255,1) 0%, rgba(255,255,255,0) 70%);
+      border-radius: 50%;
+      animation: floatSparkles 6s infinite;
+      opacity: 0.8;
+    }
+    @keyframes floatSparkles {
+      0% { transform: translateY(0px); }
+      50% { transform: translateY(-50px); }
+      100% { transform: translateY(0px); }
+    }
+    .sticker {
+      width: 80px;
+      height: 80px;
+      object-fit: contain;
+      animation: pop 1.5s infinite ease-in-out;
+      margin: 0.5rem;
+    }
+    @keyframes pop {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.1); }
+      100% { transform: scale(1); }
+    }
+
+    /* --------------- 2) PROPOSAL STORY --------------- */
+    #proposal-story {
+      background: linear-gradient(120deg, #ffdde1 0%, #ee9ca7 100%);
+      color: #000;
+    }
+    .proposal-title {
+      font-family: 'Great Vibes', cursive;
+      font-size: 3rem;
+      margin-bottom: 0.5rem;
+      opacity: 0;
+      transform: translateY(20px);
+      transition: 1s all ease;
+    }
+    .proposal-subtitle {
+      font-family: 'Great Vibes', cursive;
+      font-size: 2rem;
+      margin-bottom: 2rem;
+      opacity: 0;
+      transform: translateY(20px);
+      transition: 0.5s all ease;
+    }
+    .glow {
+      animation: glowing 2s infinite alternate;
+    }
+    @keyframes glowing {
+      0% { text-shadow: 0 0 5px #fff; }
+      100% { text-shadow: 0 0 15px #ff80ab; }
+    }
+    @keyframes flashUp {
+      0% { opacity: 0; transform: translateY(20px); }
+      50% { opacity: 1; transform: translateY(-10px); }
+      100% { transform: translateY(0); }
+    }
+    .dialogue-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 1rem;
+      max-width: 600px;
+      margin: 0 auto;
+    }
+    .dialogue-box {
+      background-color: rgba(255, 255, 255, 0.7);
+      color: #000;
+      padding: 1rem 1.5rem;
+      border-radius: 8px;
+      font-size: 1rem;
+      width: 100%;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+      opacity: 0;
+      transform: translateY(20px);
+      transition: 0.6s all ease;
+    }
+    .stickers-container {
+      display: flex;
+      justify-content: center;
+      gap: 1rem;
+      margin-top: 2rem;
+    }
+    .stickers-container .sticker {
+      animation: bounceSticker 2s infinite;
+      opacity: 0;
+      transform: scale(0.5);
+    }
+    @keyframes bounceSticker {
+      0%, 20%, 50%, 80%, 100% { transform: translateY(0) scale(1); }
+      40% { transform: translateY(-15px) scale(1); }
+      60% { transform: translateY(-8px) scale(1); }
+    }
+
+    /* --------------- 3) OUR MEMORY --------------- */
+    #our-memory {
+      background: linear-gradient(120deg, #c33764 0%, #1d2671 100%);
+      color: #fff;
+      overflow: hidden;
+    }
+    .music-emoji-container {
+      position: absolute;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      pointer-events: none;
+      z-index: 999;
+      overflow: hidden;
+    }
+    .music-note {
+      position: absolute;
+      top: -40px;
+      font-size: 24px;
+      animation: fallMusic 5s linear forwards;
+      opacity: 0.8;
+    }
+    @keyframes fallMusic {
+      0% { transform: translateY(0); }
+      100% { transform: translateY(120vh); }
+    }
+    .memory-title,
+    .memory-subtitle {
+      font-family: 'Great Vibes', cursive;
+      margin-bottom: 1rem;
+      opacity: 0;
+      transform: translateY(20px);
+      transition: 1s all ease;
+    }
+    .memory-title { font-size: 3rem; }
+    .memory-subtitle { font-size: 2rem; margin-bottom: 2rem; }
+    .memory-sticker {
+      width: 200px; 
+      height: auto;
+      margin: 2rem 0;
+      opacity: 0;
+      animation: swaySticker 2s infinite ease-in-out;
+    }
+    @keyframes swaySticker {
+      0% { transform: translateX(-10px); }
+      50% { transform: translateX(10px); }
+      100% { transform: translateX(-10px); }
+    }
+    .typing-container {
+      max-width: 600px;
+      margin: 0 auto;
+      text-align: center;
+    }
+    .typing-line {
+      font-size: 1.2rem;
+      margin: 1rem 0;
+      color: #fff;
+      white-space: nowrap;
+      overflow: hidden;
+      border-right: 2px solid rgba(255, 255, 255, 0.7);
+      width: 0; /* type from 0 to full text */
+    }
+
+    /* --------------- 4) THE PROPOSAL (MULTI-STEP) --------------- */
+    #the-proposal {
+      background: linear-gradient(120deg, #fffcfc 0%, #ffecec 100%);
+      color: #000;
+      overflow: hidden;
+    }
+    .multi-step-container {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      margin-top: 2rem;
+      position: relative;
+    }
+    .proposal-heading {
+      font-family: 'Great Vibes', cursive;
+      font-size: 3rem;
+      margin-bottom: 1rem;
+      animation: glowHeading 2s infinite alternate;
+    }
+    .proposal-subheading {
+      font-family: 'Great Vibes', cursive;
+      font-size: 2rem;
+      margin-bottom: 2rem;
+      animation: glowHeading 2s infinite alternate;
+      animation-delay: 0.5s;
+    }
+    @keyframes glowHeading {
+      0% { text-shadow: 0 0 5px #fff; }
+      100% { text-shadow: 0 0 15px #ff80ab; }
+    }
+    .proposal-options button {
+      padding: 1rem 2rem;
+      font-size: 1rem;
+      cursor: pointer;
+      border: none;
+      border-radius: 4px;
+      background-color: #ff80ab;
+      color: #fff;
+      margin: 0.5rem;
+      transition: background-color 0.3s, transform 0.3s;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+    }
+    .proposal-options button:hover {
+      background-color: #ff4081;
+      transform: scale(1.05);
+    }
+    .hidden { display: none; }
+
+    /* Bouncing stickers for No/Yes steps, positioned below the button sets. */
+    .bounce-sticker {
+      width: 60px;
+      animation: bounceSticker 2s infinite ease-in-out;
+      margin-top: 1rem; /* so it's below the buttons */
+      display: none;
+    }
+
+    /* We'll place "Yay, she said yes!" under the buttons as well */
+    .yay-message {
+      font-size: 1.5rem;
+      color: #e91e63;
+      font-weight: bold;
+      margin-top: 2rem;
+      display: none;
+    }
+    
+    /* MUSIC PLAYER */
+    .music-player {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      z-index: 100;
+    }
+    .mute-button {
+      background: rgba(255, 255, 255, 0.3);
+      border: none;
+      border-radius: 50%;
+      font-size: 24px;
+      padding: 8px 10px;
+      cursor: pointer;
+      color: #fff;
+      outline: none;
+      transition: background 0.3s;
+    }
+    .mute-button:hover {
+      background: rgba(255, 255, 255, 0.5);
+    }
+
+    /* Confetti or petals effect container */
+    .confetti {
+      position: absolute;
+      top: 0; left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      overflow: hidden;
+      z-index: 9999;
+    }
+    .petal {
+      position: absolute;
+      width: 15px;
+      height: 15px;
+      background: pink;
+      border-radius: 50%;
+      opacity: 0.7;
+      animation: fall 2s linear forwards;
+    }
+    @keyframes fall {
+      0% { transform: translateY(-10px); }
+      100% { transform: translateY(100vh); }
+    }
+
+    /* --------------- 5) FINAL PROMISE --------------- */
+    #final-promise {
+      background: linear-gradient(120deg, #ff9966 0%, #ff5e62 100%);
+      color: #fff;
+      position: relative;
+    }
+    .ring-heart-fall-container {
+      position: absolute;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      pointer-events: none;
+      z-index: 9999;
+    }
+    .ring-heart {
+      position: absolute;
+      top: -30px;
+      font-size: 24px;
+      animation: ringHeartFall 4s linear forwards;
+    }
+    @keyframes ringHeartFall {
+      0% { transform: translateY(0); }
+      100% { transform: translateY(110vh); }
+    }
+    .heart {
+      font-size: 4rem;
+      color: #ff477e;
+      animation: heartbeat 1s infinite;
+      margin: 1rem 0;
+      cursor: pointer; /* click to reveal message */
+    }
+    @keyframes heartbeat {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.2); }
+      100% { transform: scale(1); }
+    }
+    .final-message-box {
+      width: 60%;
+      max-width: 600px;
+      background: rgba(255,255,255,0.2);
+      color: #fff;
+      margin: 1rem auto;
+      padding: 1rem;
+      border-radius: 8px;
+      text-align: center;
+      display: none;
+    }
+    .promise-text {
+      font-family: 'Great Vibes', cursive;
+      font-size: 1.5rem;
+      margin: 1rem 0;
+      opacity: 0;
+      transform: translateY(20px);
+      transition: 1s all ease;
+    }
+    .promise-text.fade-in {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* Optional: Corner Emojis */
+    .corner-emoji {
+      position: fixed;
+      font-size: 2rem;
+      z-index: 9999;
+      user-select: none;
+      animation: cornerEmojiLoop 2s infinite;
+    }
+    @keyframes cornerEmojiLoop {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.2); }
+    }
+    #cornerEmoji1 { top: 10px; left: 10px; }
+    #cornerEmoji2 { top: 10px; right: 10px; }
+    #cornerEmoji3 { bottom: 10px; left: 10px; }
+    #cornerEmoji4 { bottom: 10px; right: 10px; }
+
+  </style>
+</head>
+<body>
+
+  <!-- (Optional) Corner Emojis -->
+  <div class="corner-emoji" id="cornerEmoji1">😲</div>
+  <div class="corner-emoji" id="cornerEmoji2">😲</div>
+  <div class="corner-emoji" id="cornerEmoji3">😲</div>
+  <div class="corner-emoji" id="cornerEmoji4">😲</div>
+
+  <!-- 1) HERO SECTION -->
+  <section id="hero">
+    <h2 class="hero-extra-title">Happy Proposal Day Cookie</h2>
+    <h1>April 9th, 2022 – The Day My Forever Began</h1>
+    <p>A moment that changed everything…</p>
+    <div class="scroll-indicator"></div>
+    <!-- Sparkles -->
+    <div class="sparkle" style="left:10%; top:20%; animation-delay: 0s;"></div>
+    <div class="sparkle" style="left:30%; top:50%; animation-delay: 1s;"></div>
+    <div class="sparkle" style="left:70%; top:40%; animation-delay: 2s;"></div>
+    <div class="sparkle" style="left:80%; top:70%; animation-delay: 3s;"></div>
+    <div class="sparkle" style="left:50%; top:80%; animation-delay: 4s;"></div>
+
+    <!-- Some Stickers -->
+    <img
+      src="images/ringsticker.png"
+      alt="ring sticker"
+      class="sticker"
+      style="position: absolute; bottom: 100px; right: 10%;"
+    />
+    <img
+      src="images/heartsticker.png"
+      alt="heart sticker"
+      class="sticker"
+      style="position: absolute; bottom: 120px; left: 15%;"
+    />
+    <img
+      src="images/propose.png"
+      alt="heart sticker"
+      class="sticker"
+      style="position: absolute; top: 10%; left: 15%;"
+    />
+    <img
+      src="images/propose2.png"
+      alt="heart sticker"
+      class="sticker"
+      style="position: absolute; top: 10%; right: 15%;"
+    />
+  </section>
+  
+  <!-- MUSIC PLAYER -->
+  <div class="music-player">
+    <!-- Note: We removed autoplay so that we can trigger play on user interaction -->
+    <audio id="backgroundAudio" loop muted>
+      <source src="music/prop.mp3" type="audio/mpeg">
+      Your browser does not support the audio element.
+    </audio>
+    <button id="muteButton" class="mute-button">🔇</button>
+  </div>
+
+  <!-- 2) PROPOSAL STORY -->
+  <section id="proposal-story">
+    <h2 class="proposal-title">The Proposal Story</h2>
+    <h3 class="proposal-subtitle">A Moment of Shock & Love</h3>
+
+    <div class="dialogue-container">
+      <div class="dialogue-box">👩: “Hey… do you really love me?”</div>
+      <div class="dialogue-box">🧑: “Of course I do. Why do you keep asking?”</div>
+      <div class="dialogue-box">👩: “Say it again… I love teasing you!”</div>
+      <div class="dialogue-box">🧑: “I love you!”</div>
+      <div class="dialogue-box">👩: “Wait... never mind!” *laughs*</div>
+      <div class="dialogue-box">🧑: “Are you serious or joking? I'm so confused!”</div>
+      <div class="dialogue-box">👩: “Just hush and take my heart already!”</div>
+      <div class="dialogue-box final-line">🧑: "Wait let me comprehend it! I need to take a few deep breaths!"</div>
+    </div>
+
+    <div class="stickers-container">
+      <img
+        src="images/boytexting.png"
+        alt="boy sticker"
+        class="sticker"
+        style="position: absolute; top: 40px; left: 15%;"
+      />
+      <img
+        src="images/girltexting.png"
+        alt="girl sticker"
+        class="sticker"
+        style="position: absolute; top: 40px; right: 15%;"
+      />
+      <img
+        src="images/laughing.png"
+        alt="laughing sticker"
+        class="sticker"
+        style="position: absolute; top: 50%; right: 15%;"
+      />
+      <img
+        src="images/surprised.png"
+        alt="surprised sticker"
+        class="sticker"
+        style="position: absolute; top: 50%; left: 15%;"
+      />
+      <img
+        src="images/boygirl.png"
+        alt="couple sticker"
+        class="sticker"
+      />
+    </div>
+  </section>
+
+  <!-- 3) OUR MEMORY -->
+  <section id="our-memory">
+    <div class="music-emoji-container" id="musicEmojiContainer"></div>
+
+    <h2 id="memoryTitle" class="memory-title">Our best memory</h2>
+    <h3 id="memorySubtitle" class="memory-subtitle">The Song That Tied Us Together</h3>
+
+    <img 
+      src="images/song.png" 
+      alt="couple sticker" 
+      class="memory-sticker" 
+      id="memorySticker"
+    />
+
+    <div class="typing-container">
+      <p id="line1" class="typing-line"></p>
+      <p id="line2" class="typing-line"></p>
+      <p id="line3" class="typing-line"></p>
+      <p id="line4" class="typing-line"></p>
+    </div>
+  </section>
+
+  <!-- 4) THE PROPOSAL (MULTI-STEP) -->
+  <section id="the-proposal">
+    <div class="multi-step-container">
+      <h2 class="proposal-heading">proposal</h2>
+      <h3 class="proposal-subheading">Hey cookie, will you trust me?</h3>
+
+      <!-- Confetti Container -->
+      <div class="confetti" id="confettiContainer"></div>
+
+      <!-- "Yay" message (hidden initially) -->
+      <div id="yayMessage" class="yay-message">Yay, she said yes!</div>
+
+      <!-- Stickers below the boxes, center-aligned -->
+      <img src="images/frown.png" alt="frown sticker" class="bounce-sticker" id="frownSticker">
+      <img src="images/cry.png" alt="cry sticker" class="bounce-sticker" id="crySticker">
+      <img src="images/disappointed.png" alt="disappointed sticker" class="bounce-sticker" id="disappointedSticker">
+      <img src="images/happy.png" alt="happy sticker" class="bounce-sticker" id="happySticker">
+
+      <!-- FIRST SET -->
+      <div id="proposalOptions1" class="proposal-options">
+        <button onclick="clickYes()">Yes</button>
+        <button onclick="clickYes()">Definitely</button>
+        <button onclick="clickYes()">Without a doubt yes</button>
+        <button onclick="showSecondOptions()">NO</button>
+      </div>
+
+      <!-- SECOND SET -->
+      <div id="proposalOptions2" class="proposal-options hidden">
+        <button onclick="clickYes()">Yes</button>
+        <button onclick="clickYes()">Please say yes</button>
+        <button onclick="showThirdOptions()">Still no</button>
+      </div>
+
+      <!-- THIRD SET -->
+      <div id="proposalOptions3" class="proposal-options hidden">
+        <button onclick="clickYes()">Haan bol do</button>
+        <button onclick="clickYes()">Please haan bol do</button>
+        <button onclick="showFourthOption()">Abhi bhi nahi</button>
+      </div>
+
+      <!-- FOURTH (SINGLE YES) -->
+      <div id="proposalOptions4" class="proposal-options hidden">
+        <button onclick="clickYes()">Yes</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- 5) FINAL PROMISE -->
+  <section id="final-promise">
+    <!-- Container for ring/heart emojis -->
+    <div class="ring-heart-fall-container" id="ringHeartContainer"></div>
+
+    <!-- Clickable Heart -->
+    <div class="heart" id="clickableHeart">❤️</div>
+
+    <!-- Final Message Box (fade-in text) -->
+    <div class="final-message-box" id="finalMessageBox">
+      <p class="promise-text" id="fpLine1">
+        You are my forever, Cookie. There is no “maybe.” There is no doubt. There is only you, only us.
+      </p>
+      <p class="promise-text" id="fpLine2">
+        And one day, I won’t just be asking you here. I’ll be on one knee, for real, looking into your eyes, asking you to be mine forever.
+      </p>
+      <p class="promise-text" id="fpLine3">
+        Until then, I hope this makes you smile. Because I love you, and I always will.
+      </p>
+    </div>
+  </section>
+
+  <!-- JavaScript -->
+  <script>
+    /* ================================
+       SECTION FADE-IN (IntersectionObserver)
+       ================================ */
+    const sections = document.querySelectorAll('section');
+    const observer = new IntersectionObserver((entries, obs) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('visible');
+          obs.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.1 });
+    sections.forEach(section => {
+      observer.observe(section);
+    });
+
+    /* ================================
+       PROPOSAL STORY ANIMATION
+       ================================ */
+    const proposalStorySection = document.querySelector('#proposal-story');
+    const title2 = proposalStorySection.querySelector('.proposal-title');
+    const subtitle2 = proposalStorySection.querySelector('.proposal-subtitle');
+    const dialogueBoxes = proposalStorySection.querySelectorAll('.dialogue-box');
+    const storyStickers = proposalStorySection.querySelectorAll('.stickers-container .sticker');
+
+    const proposalObserver = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          animateProposalStory();
+          proposalObserver.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.3 });
+    proposalObserver.observe(proposalStorySection);
+
+    function animateProposalStory() {
+      // Fade in Title
+      title2.style.opacity = 1;
+      title2.style.transform = 'translateY(0)';
+
+      // Subtitle flashUp
+      setTimeout(() => {
+        subtitle2.style.opacity = 1;
+        subtitle2.style.transform = 'translateY(0)';
+        subtitle2.style.animation = 'flashUp 0.7s forwards';
+      }, 800);
+
+      // Glow
+      setTimeout(() => {
+        title2.classList.add('glow');
+        subtitle2.classList.add('glow');
+      }, 2000);
+
+      // Dialogue boxes (sequential)
+      let delay = 2500;
+      dialogueBoxes.forEach((box, index) => {
+        setTimeout(() => {
+          box.style.opacity = 1;
+          box.style.transform = 'translateY(0)';
+        }, delay + index * 600);
+      });
+
+      // Stickers
+      storyStickers.forEach((st, idx) => {
+        setTimeout(() => {
+          st.style.opacity = 1;
+          st.style.transform = 'scale(1)';
+        }, delay + idx * 600);
+      });
+    }
+
+
+    /* ================================
+       OUR MEMORY ANIMATION
+       ================================ */
+    const ourMemorySection = document.querySelector('#our-memory');
+    const memoryTitle = document.getElementById('memoryTitle');
+    const memorySubtitle = document.getElementById('memorySubtitle');
+    const memorySticker = document.getElementById('memorySticker');
+    const linesMem = [
+      "One earphone for you. One for me.",
+      "Mudhal Nee, Mudivum Nee playing.Our voices filling the air, singing at the top of our lungs.",
+      "The world faded. Just you, me, and our song.",
+      "You are my beginning. You are my forever. You are everything in between."
+    ];
+    const line1Mem = document.getElementById('line1');
+    const line2Mem = document.getElementById('line2');
+    const line3Mem = document.getElementById('line3');
+    const line4Mem = document.getElementById('line4');
+    const musicEmojiContainer = document.getElementById('musicEmojiContainer');
+
+    const memoryObserver = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          animateOurMemory();
+          memoryObserver.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.3 });
+    memoryObserver.observe(ourMemorySection);
+
+    function animateOurMemory() {
+      memoryTitle.style.opacity = 1;
+      memoryTitle.style.transform = 'translateY(0)';
+      setTimeout(() => {
+        memorySubtitle.style.opacity = 1;
+        memorySubtitle.style.transform = 'translateY(0)';
+      }, 800);
+      setTimeout(() => {
+        memorySticker.style.opacity = 1;
+      }, 1600);
+
+      // Typewriter lines
+      typeLinesSequentially(linesMem);
+
+      // Start falling music notes
+      startMusicEmojis();
+    }
+
+    function typeLinesSequentially(lines) {
+      let index = 0;
+      function typeNextLine() {
+        if (index >= lines.length) return;
+        const text = lines[index];
+        const lineElem = document.getElementById(`line${index + 1}`);
+        typeWriter(lineElem, text, 0, () => {
+          index++;
+          setTimeout(typeNextLine, 500);
+        });
+      }
+      typeNextLine();
+    }
+    function typeWriter(element, text, i, callback) {
+      if (i < text.length) {
+        element.textContent = text.substring(0, i+1);
+        element.style.width = (i+1) + "ch";
+        setTimeout(() => {
+          typeWriter(element, text, i+1, callback);
+        }, 50);
+      } else {
+        element.style.borderRight = "none";
+        if (callback) callback();
+      }
+    }
+    function startMusicEmojis() {
+      setInterval(() => {
+        createMusicNote();
+      }, 600);
+    }
+    function createMusicNote() {
+      const noteEl = document.createElement('div');
+      noteEl.classList.add('music-note');
+      const emojis = ["\u{1F3B6}", "\u{1F3B5}", "\u{1F3BC}"];
+      noteEl.textContent = emojis[Math.floor(Math.random() * emojis.length)];
+      noteEl.style.left = Math.random() * 100 + "%";
+      noteEl.style.fontSize = (20 + Math.random() * 20) + "px";
+      musicEmojiContainer.appendChild(noteEl);
+      setTimeout(() => noteEl.remove(), 5000);
+    }
+
+
+    /* ================================
+       PROPOSAL MULTI-STEP LOGIC
+       ================================ */
+    const frownSticker = document.getElementById('frownSticker');
+    const crySticker = document.getElementById('crySticker');
+    const disappointedSticker = document.getElementById('disappointedSticker');
+    const happySticker = document.getElementById('happySticker');
+
+    const options1 = document.getElementById('proposalOptions1');
+    const options2 = document.getElementById('proposalOptions2');
+    const options3 = document.getElementById('proposalOptions3');
+    const options4 = document.getElementById('proposalOptions4');
+
+    const yayMessage = document.getElementById('yayMessage');
+
+    function showSecondOptions() {
+      options1.classList.add('hidden');
+      options2.classList.remove('hidden');
+      showSticker(frownSticker);
+    }
+    function showThirdOptions() {
+      options2.classList.add('hidden');
+      options3.classList.remove('hidden');
+      showSticker(crySticker);
+    }
+    function showFourthOption() {
+      options3.classList.add('hidden');
+      options4.classList.remove('hidden');
+      showSticker(disappointedSticker);
+    }
+
+    function clickYes() {
+      // Hide all sets
+      options1.classList.add('hidden');
+      options2.classList.add('hidden');
+      options3.classList.add('hidden');
+      options4.classList.add('hidden');
+
+      // Show "Yay, she said yes!"
+      yayMessage.style.display = 'block';
+
+      // Hide all "no" stickers
+      frownSticker.style.display = 'none';
+      crySticker.style.display = 'none';
+      disappointedSticker.style.display = 'none';
+
+      // Show the happy sticker
+      showSticker(happySticker);
+
+      // Fire confetti
+      confettiParty();
+    }
+
+    function showSticker(stickerEl) {
+      // Hide all first
+      [frownSticker, crySticker, disappointedSticker, happySticker].forEach(s => s.style.display = 'none');
+      // Show target
+      stickerEl.style.display = 'block';
+    }
+
+    /* Confetti logic */
+    function confettiParty() {
+      const confettiContainer = document.getElementById('confettiContainer');
+      for (let i = 0; i < 50; i++) {
+        const petal = document.createElement('div');
+        petal.classList.add('petal');
+        petal.style.left = Math.random() * 100 + '%';
+        petal.style.backgroundColor = randomColor();
+        petal.style.animationDelay = Math.random() + 's';
+        confettiContainer.appendChild(petal);
+
+        petal.addEventListener('animationend', () => {
+          petal.remove();
+        });
+      }
+    }
+    function randomColor() {
+      const hue = Math.floor(Math.random() * 360);
+      return `hsl(${hue}, 70%, 80%)`;
+    }
+
+
+    /* ================================
+       FINAL PROMISE (Clickable Heart)
+       ================================ */
+    const clickableHeart = document.getElementById('clickableHeart');
+    const finalMessageBox = document.getElementById('finalMessageBox');
+    const ringHeartContainer = document.getElementById('ringHeartContainer');
+
+    clickableHeart.addEventListener('click', () => {
+      finalMessageBox.style.display = 'block';
+
+      // Fade each line in with small stagger
+      const lines = finalMessageBox.querySelectorAll('.promise-text');
+      lines.forEach((line, i) => {
+        setTimeout(() => {
+          line.classList.add('fade-in');
+        }, i * 400);
+      });
+
+      // Start ring/heart emojis falling
+      setInterval(() => {
+        createRingHeartEmoji();
+      }, 600);
+    });
+
+    function createRingHeartEmoji() {
+      const emojiEl = document.createElement('div');
+      emojiEl.classList.add('ring-heart');
+      const emojis = ["\u{1F48D}", "\u{2764}"]; // ring, heart
+      emojiEl.textContent = emojis[Math.floor(Math.random() * emojis.length)];
+      emojiEl.style.left = Math.random() * 100 + "%";
+      const size = 20 + Math.random() * 15;
+      emojiEl.style.fontSize = size + "px";
+      ringHeartContainer.appendChild(emojiEl);
+      setTimeout(() => emojiEl.remove(), 4000);
+    }
+
+    // When the user clicks anywhere on the window, try to play the audio if it isn't already playing.
+  window.addEventListener('click', function() {
+    const audio = document.getElementById('backgroundAudio');
+    if (audio.paused) {
+      audio.play().then(() => {
+        console.log("Audio started playing.");
+      }).catch((error) => {
+        console.error("Error playing audio:", error);
+      });
+    }
+});
+
+// Mute toggle button event listener.
+  document.getElementById('muteButton').addEventListener('click', function(e){
+    e.stopPropagation();
+    const audio = document.getElementById('backgroundAudio');
+    audio.muted = !audio.muted;
+    this.textContent = audio.muted ? '🔇' : '🔊';
+});
+
+    /* (Optional) Corner Emojis Loop
+    const cornerEmojiIds = ['cornerEmoji1', 'cornerEmoji2', 'cornerEmoji3', 'cornerEmoji4'];
+    let isShocked = true;
+    setInterval(() => {
+      cornerEmojiIds.forEach(id => {
+        const emojiEl = document.getElementById(id);
+        if(emojiEl) {
+          emojiEl.textContent = isShocked ? '😊' : '😲';
+        }
+      });
+      isShocked = !isShocked;
+    }, 2000);
+    */
+  </script>
+</body>
+</html>
