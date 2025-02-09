@@ -1,0 +1,1078 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Chocolate Day Celebration</title>
+
+  <!-- Import Great Vibes font -->
+  <link rel="stylesheet" 
+        href="https://fonts.googleapis.com/css2?family=Great+Vibes&display=swap">
+        <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+
+        
+  <style>
+    /* RESET / BASE STYLES */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      background: #1e1f26;
+      min-height: 100vh;
+      overflow: hidden;
+      font-family: 'Great Vibes', cursive; /* Use Great Vibes globally */
+      color: #fff;
+      position: relative; /* for confetti positioning */
+    }
+
+    /* ---------------------------------------------
+       BACKGROUND VIDEO
+    ---------------------------------------------- */
+    .video-container {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      z-index: -2; /* behind everything */
+    }
+    .bg-video {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      position: absolute;
+      top: 0;
+      left: 0;
+      transition: opacity 2s ease;
+    }
+    .fade-in {
+      opacity: 1;
+    }
+    .fade-out {
+      opacity: 0;
+    }
+
+    /* ---------------------------------------------
+       8 ANIMATED GIFs AROUND THE SCREEN
+    ---------------------------------------------- */
+    .gif {
+      position: absolute;
+      width: 100px; /* adjust as needed */
+      height: 100px;
+      overflow: hidden;
+    }
+    .gif img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      animation: bounce 2s infinite;
+    }
+    @keyframes bounce {
+      0%, 20%, 50%, 80%, 100% {
+        transform: translateY(0);
+      }
+      40% {
+        transform: translateY(-20px);
+      }
+      60% {
+        transform: translateY(-10px);
+      }
+    }
+    /* Position examples */
+    .gif1 { top: 10%; left: 20px; }
+    .gif2 { top: 45%; left: 5%; }
+    .gif3 { top: 80%; left: 8%; }
+    .gif4 { top: 10%; right: 20px; }
+    .gif5 { top: 45%; right: 5%; }
+    .gif6 { top: 80%; right: 8%; }
+    .gif7 { top: 82%; left: 46%; }
+    .gif8 { top: 3%; left: 46%; }
+
+    /* ---------------------------------------------
+       MAIN CONTAINER (MESSAGE + CHOCOLATE BOX)
+    ---------------------------------------------- */
+    #mainContainer {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-top: 50px;
+      gap: 30px;
+      text-align: center;
+    }
+
+    .glow-box {
+      border: 2px solid #c04b50; 
+      box-shadow: 0 0 10px 2px rgba(192, 75, 80, 0.5);
+      animation: pulseGlow 2s infinite;
+      border-radius: 8px;
+      padding: 20px 30px;
+      max-width: 320px;
+    }
+    @keyframes pulseGlow {
+      0%, 100% {
+        box-shadow: 0 0 10px 2px rgba(192, 75, 80, 0.5);
+      }
+      50% {
+        box-shadow: 0 0 20px 4px rgba(192, 75, 80, 0.8);
+      }
+    }
+
+    .chocolate-box-svg {
+      width: 400px;
+      height: 400px;
+    }
+    .chocolate-box-svg svg {
+      width: 100%;
+      height: 100%;
+      overflow: visible;
+    }
+    .chocolate-box-svg #chocolate_box {
+      cursor: pointer;
+    }
+    .chocolate-box-svg #chocolate_box #top {
+      transition: transform 1s ease;
+    }
+    .chocolate-box-svg #chocolate_box:hover #top {
+      transform: translate(40px, -25px) rotate(10deg);
+      transition: transform 1s ease;
+    }
+
+    /* "Play Game" BUTTON */
+    #playGameBtn {
+      display: block;
+      margin: 30px auto 0 auto;
+      padding: 10px 20px;
+      background-color: #e44e51;
+      border: none;
+      border-radius: 4px;
+      color: #fff;
+      font-size: 1.4rem;
+      cursor: pointer;
+      transition: box-shadow 0.3s, transform 0.3s;
+    }
+    #playGameBtn:hover {
+      box-shadow: 0 0 10px #e44e51;
+      transform: scale(1.05);
+    }
+
+    /* Fade In for each line of text */
+    .fade-line {
+      opacity: 0;
+      transition: opacity 1s;
+    }
+    .fade-line.show {
+      opacity: 1;
+    }
+
+    /* ---------------------------------------------
+       GAME POPUP (Matches + Word Search)
+    ---------------------------------------------- */
+    .game-popup {
+        position: fixed;
+        bottom: -120%;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 350px;
+        background: rgba(0,0,0,0.9);
+        border: 2px solid #e44e51;
+        border-radius: 8px;
+        opacity: 0;
+        transition: bottom 0.8s ease, opacity 0.8s ease;
+        z-index: 999;
+        text-align: center;
+        
+        /* NEW: Allow auto-scroll if it gets too tall */
+        max-height: 80vh;   /* 80% of viewport height */
+        overflow-y: auto;
+      }
+      
+      .game-popup.active {
+        bottom: 50px;
+        opacity: 1;
+      }
+      
+    .popup-content {
+      padding: 20px;
+    }
+    .game-button {
+      display: block;
+      width: 80%;
+      margin: 10px auto;
+      padding: 10px 0;
+      background: #c04b50;
+      border: none;
+      border-radius: 4px;
+      color: #fff;
+      cursor: pointer;
+      font-size: 1rem;
+      transition: 0.3s;
+    }
+    .game-button:hover {
+      background: #e44e51;
+      box-shadow: 0 0 10px #e44e51;
+      transform: scale(1.05);
+    }
+
+    .hidden {
+      display: none;
+    }
+
+    /* MEMORY MATCH STYLES */
+    .memory-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 60px);
+      gap: 10px;
+      margin: 0 auto;
+      justify-content: center;
+      
+    }
+    .memory-card {
+      width: 60px;
+      height: 60px;
+      background-color: #222;
+      border-radius: 6px;
+      position: relative;
+      cursor: pointer;
+      transform-style: preserve-3d;
+      transition: transform 0.5s;
+    }
+    .memory-card.flipped {
+      transform: rotateY(180deg);
+    }
+    .front-face, .back-face {
+      width: 100%;
+      height: 100%;
+      border-radius: 6px;
+      position: absolute;
+      backface-visibility: hidden;
+    }
+    .front-face {
+      transform: rotateY(180deg);
+      background-size: cover;
+    }
+    .back-face {
+      background: #c04b50 url('images/choco_back.png') center center / cover;
+    }
+
+    /* WORD SEARCH STYLES */
+    .wordsearch-area {
+      margin-top: 15px;
+    }
+    .wordsearch-grid {
+      margin: 0 auto;
+      border-collapse: collapse;
+      user-select: none;
+    }
+    .wordsearch-grid td {
+      width: 24px;
+      height: 24px;
+      font-family: 'Poppins', sans-serif;
+      text-align: center;
+      border: 1px solid #ccc;
+      font-weight: 600;
+      font-size: 18px;
+      cursor: pointer;
+      position: relative;
+      transition: background 0.2s;
+    }
+    .wordsearch-grid td.highlight {
+      background: #e44e51;
+      color: #fff;
+    }
+    .words-list {
+      margin-top: 10px;
+      text-align: left;
+      font-size: 14px;
+      font-family: 'Poppins', sans-serif;
+    }
+    .found-word {
+      text-decoration: line-through;
+      color: #aaa;
+    }
+
+    /* COMPLETION SCREEN (inside the popup) */
+    .game-complete {
+      margin-top: 15px;
+    }
+    .confetti {
+      pointer-events: none;
+      position: fixed;
+      top: 0; left: 0;
+      width: 100vw;
+      height: 100vh;
+      overflow: hidden;
+      z-index: 1000; 
+    }
+
+    /* REWARD CONTAINER */
+    #rewardContainer {
+      display: none;
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: rgba(0,0,0,0.7);
+      border: 2px solid #e44e51;
+      border-radius: 8px;
+      max-width: 400px;
+      text-align: center;
+      z-index: 1001;
+      padding: 20px;
+      /* Glowing border as well */
+      box-shadow: 0 0 10px 2px rgba(192, 75, 80, 0.5);
+      animation: pulseGlow 2s infinite;
+    }
+
+    #rewardContainer p {
+      margin-bottom: 10px;
+      line-height: 1.4;
+    }
+
+    /* MUSIC PLAYER */
+    .music-player {
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        z-index: 100;
+      }
+      .mute-button {
+        background: rgba(255, 255, 255, 0.3);
+        border: none;
+        border-radius: 50%;
+        font-size: 24px;
+        padding: 8px 10px;
+        cursor: pointer;
+        color: #fff;
+        outline: none;
+        transition: background 0.3s;
+      }
+      .mute-button:hover {
+        background: rgba(255, 255, 255, 0.5);
+      }
+
+  </style>
+</head>
+<body>
+
+  <!-- 1) BACKGROUND VIDEO(s) -->
+  <div class="video-container">
+    <video id="bg-video" class="bg-video fade-in" autoplay muted playsinline></video>
+  </div>
+
+  <!-- 2) 8 GIFs placed around the screen -->
+  <div class="gif gif1"><img src="images/gif1.gif" alt="GIF1"></div>
+  <div class="gif gif2"><img src="images/gif2.gif" alt="GIF2"></div>
+  <div class="gif gif3"><img src="images/gif3.gif" alt="GIF3"></div>
+  <div class="gif gif4"><img src="images/gif4.gif" alt="GIF4"></div>
+  <div class="gif gif5"><img src="images/gif5.gif" alt="GIF5"></div>
+  <div class="gif gif6"><img src="images/gif6.gif" alt="GIF6"></div>
+  <div class="gif gif7"><img src="images/gif7.gif" alt="GIF7"></div>
+  <div class="gif gif8"><img src="images/gif8.gif" alt="GIF8"></div>
+
+  <!-- 3) MAIN CONTAINER: Message + Chocolate Box -->
+  <div id="mainContainer">
+    <!-- Glowing message box -->
+    <div class="glow-box" id="messageBox"></div>
+
+    <!-- Chocolate Box SVG -->
+    <div class="chocolate-box-svg">
+      <!-- FULL SVG CODE -->
+      <svg width="400" height="400" viewBox="0 0 141 141" fill="none" aria-labelledby="title description">
+        <title id="title">Valentine's Day Chocolate Box</title>
+        <desc id="description">A Chocolate Box that opens up when hovering over it.</desc>
+        <g id="chocolate_box">
+          <g id="bottom">
+            <path id="heart_bottom_shadow" d="M70.5294 47.2283C64.4454 30.5983 33.8235 33.0686 33.8235 58.2184C33.8235 70.7487 43.1835 87.4218 70.5294 104.412C97.8753 87.4218 107.235 70.7487 107.235 58.2184C107.235 33.2134 76.6471 30.4997 70.5294 47.2283V47.2283Z" fill="url(#paint0_linear)" />
+            <path id="heart_bottom" d="M70.5294 46.3466C64.9134 31.1023 36.6471 33.3668 36.6471 56.4209C36.6471 67.907 45.2871 83.1908 70.5294 98.7654C95.7718 83.1908 104.412 67.907 104.412 56.4209C104.412 33.4995 76.1765 31.012 70.5294 46.3466Z" fill="url(#paint1_linear)" />
+            <g id="chocolate">
+              <circle id="Ellipse 3" cx="69" cy="86.0004" r="7" fill="url(#paint2_radial)" />
+              <rect id="Rectangle 9" x="61.7605" y="85.9659" width="10.5962" height="10.3544" rx="3" transform="rotate(-43.6167 61.7605 85.9659)" fill="#4D2E07" />
+              <rect id="Rectangle 14" x="66.9147" y="91.4976" width="7.57338" height="10.6194" rx="3" transform="rotate(-133.325 66.9147 91.4976)" fill="url(#paint3_linear)" />
+            </g>
+            <g id="chocolate_2">
+              <circle id="Ellipse 5" cx="83" cy="75.0004" r="7" fill="url(#paint4_radial)" />
+              <rect id="Rectangle 11" x="78.0215" y="69.5529" width="10.5962" height="10.3544" rx="3" transform="rotate(0.379638 78.0215 69.5529)" fill="#74391E" />
+              <rect id="Rectangle 16" x="85.6896" y="79.916" width="7.70499" height="10.8024" rx="3" transform="rotate(-179.744 85.6896 79.916)" fill="url(#paint5_linear)" />
+            </g>
+            <g id="chocolate_3">
+              <circle id="Ellipse 4" cx="69" cy="61.0004" r="7" fill="url(#paint6_radial)" />
+              <rect id="Rectangle 10" x="66.9211" y="53.5886" width="10.5962" height="10.3544" rx="3" transform="rotate(28.0076 66.9211 53.5886)" fill="#74391E" />
+              <rect id="Rectangle 15" x="68.6167" y="66.1321" width="7.57338" height="10.1735" rx="3" transform="rotate(-152.727 68.6167 66.1321)" fill="url(#paint7_linear)" />
+            </g>
+            <g id="chocolate_4">
+              <circle id="Ellipse 1" cx="49" cy="52.0004" r="7" fill="url(#paint8_radial)" />
+              <rect id="Rectangle 7" x="46.8623" y="45.0004" width="10.5962" height="10.3544" rx="3" transform="rotate(28.0076 46.8623 45.0004)" fill="#4D2E07" />
+              <rect id="Rectangle 12" x="46.7615" y="44.954" width="7.79979" height="10.3325" rx="3" transform="rotate(28.0076 46.7615 44.954)" fill="url(#paint9_linear)" />
+            </g>
+            <g id="chocolate_5">
+              <circle id="Ellipse 2" cx="55" cy="72.0004" r="7" fill="url(#paint10_radial)" />
+              <rect id="Rectangle 8" x="49.1595" y="67.4497" width="10.5962" height="10.3544" rx="3" transform="rotate(-7.01037 49.1595 67.4497)" fill="#E1BA92" />
+              <rect id="Rectangle 13" x="50.162" y="75.084" width="7.79979" height="10.6194" rx="3" transform="rotate(-97.6047 50.162 75.084)" fill="url(#paint11_linear)" />
+            </g>
+          </g>
+          <g id="top">
+            <path id="heart_top_shadow" d="M70.8089 47.1526C64.9734 30.4338 34.3181 32.4475 33.9433 57.5945C33.7566 70.1234 42.867 86.9341 69.9566 104.33C97.5527 87.7492 107.16 71.2175 107.347 58.6886C107.72 33.6863 77.1751 30.5171 70.8089 47.1526V47.1526Z" fill="url(#paint12_linear)" />
+            <path id="heart_top" d="M70.822 46.271C65.4338 30.9448 37.1368 32.7877 36.7933 55.8393C36.6221 67.3241 45.0333 82.735 70.0408 98.684C95.5124 83.4873 104.379 68.334 104.55 56.8492C104.892 33.9304 76.6969 31.0223 70.822 46.271V46.271Z" fill="url(#paint13_linear)" />
+            <mask id="mask0" mask-type="alpha" maskUnits="userSpaceOnUse" x="36" y="36" width="69" height="64">
+              <path id="heart_mask" d="M70.822 46.271C65.4338 30.9448 37.1368 32.7877 36.7933 55.8393C36.6221 67.3241 45.0333 82.735 70.0408 98.684C95.5124 83.4873 104.379 68.334 104.55 56.8492C104.892 33.9304 76.6969 31.0223 70.822 46.271V46.271Z" fill="url(#paint14_linear)" />
+            </mask>
+            <g mask="url(#mask0)">
+              <line id="ribbon" x1="29.8641" y1="35.7361" x2="91.9818" y2="95.0302" stroke="url(#paint15_linear)" stroke-width="10" />
+              <g id="bow">
+                <path id="side_four" d="M51.0649 56.6703C51.7171 55.0943 53.9163 55.0056 54.6933 56.524L56.9415 60.9173C57.6065 62.2169 56.7003 63.768 55.2417 63.8268L51.1063 63.9935C49.6477 64.0524 48.6195 62.5792 49.1777 61.2304L51.0649 56.6703Z" fill="url(#paint16_linear)" />
+                <path id="side_three" d="M53.8296 56.9246C52.1934 56.4425 51.873 54.265 53.3008 53.3319L57.4321 50.6323C58.6541 49.8337 60.2923 50.571 60.5048 52.0153L61.1074 56.1099C61.32 57.5542 59.9637 58.7322 58.5634 58.3196L53.8296 56.9246Z" fill="url(#paint17_linear)" />
+                <path id="side_two" d="M51.8688 53.3124C53.4251 54.0105 53.4494 56.2113 51.9089 56.9435L47.4517 59.0623C46.1333 59.689 44.6093 58.7378 44.5932 57.278L44.5475 53.1396C44.5314 51.6798 46.0339 50.6952 47.3659 51.2926L51.8688 53.3124Z" fill="url(#paint18_linear)" />
+                <path id="side_one" d="M54.2978 53.687C53.624 55.254 51.4239 55.3126 50.6677 53.7836L48.4799 49.36C47.8327 48.0515 48.7601 46.5129 50.2194 46.4741L54.3566 46.3639C55.8159 46.3251 56.8238 47.8121 56.2472 49.1532L54.2978 53.687Z" fill="url(#paint19_linear)" />
+              </g>
+            </g>
+          </g>
+        </g>
+        <defs>
+          <linearGradient id="paint0_linear" x1="70.5294" y1="36.6475" x2="70.5294" y2="104.412" gradientUnits="userSpaceOnUse">
+            <stop stop-color="#9A3436" />
+            <stop offset="1" stop-color="#D2484A" />
+          </linearGradient>
+          <linearGradient id="paint1_linear" x1="101.588" y1="49.3533" x2="70.5294" y2="98.7654" gradientUnits="userSpaceOnUse">
+            <stop stop-color="#AD3C3E" />
+            <stop offset="1" stop-color="#E44E51" />
+          </linearGradient>
+          <radialGradient id="paint2_radial" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(69 86.0004) rotate(90) scale(7)">
+            <stop offset="0.5625" stop-color="#9B4749" />
+            <stop offset="1" stop-color="#FF8688" />
+          </radialGradient>
+          <linearGradient id="paint3_linear" x1="70.7014" y1="91.4976" x2="70.7014" y2="102.117" gradientUnits="userSpaceOnUse">
+            <stop stop-color="#6F430C" />
+            <stop offset="1" stop-color="#9C6841" stop-opacity="0" />
+          </linearGradient>
+          <radialGradient id="paint4_radial" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(83 75.0004) rotate(90) scale(7)">
+            <stop offset="0.5625" stop-color="#9B4749" />
+            <stop offset="1" stop-color="#FF8688" />
+          </radialGradient>
+          <linearGradient id="paint5_linear" x1="89.5421" y1="79.916" x2="89.5421" y2="90.7184" gradientUnits="userSpaceOnUse">
+            <stop stop-color="#9C6841" />
+            <stop offset="1" stop-color="#9C6841" stop-opacity="0" />
+          </linearGradient>
+          <radialGradient id="paint6_radial" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(69 61.0004) rotate(90) scale(7)">
+            <stop offset="0.5625" stop-color="#9B4749" />
+            <stop offset="1" stop-color="#FF8688" />
+          </radialGradient>
+          <linearGradient id="paint7_linear" x1="72.4034" y1="66.1321" x2="72.4034" y2="76.3057" gradientUnits="userSpaceOnUse">
+            <stop stop-color="#9C6841" />
+            <stop offset="1" stop-color="#9C6841" stop-opacity="0" />
+          </linearGradient>
+          <radialGradient id="paint8_radial" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(49 52.0004) rotate(90) scale(7)">
+            <stop offset="0.5625" stop-color="#9B4749" />
+            <stop offset="1" stop-color="#FF8688" />
+          </radialGradient>
+          <linearGradient id="paint9_linear" x1="50.6614" y1="44.954" x2="50.6614" y2="55.2865" gradientUnits="userSpaceOnUse">
+            <stop stop-color="#6F430C" />
+            <stop offset="1" stop-color="#9C6841" stop-opacity="0" />
+          </linearGradient>
+          <radialGradient id="paint10_radial" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(55 72.0004) rotate(90) scale(7)">
+            <stop offset="0.5625" stop-color="#9B4749" />
+            <stop offset="1" stop-color="#FF8688" />
+          </radialGradient>
+          <linearGradient id="paint11_linear" x1="54.0619" y1="75.084" x2="54.0619" y2="85.7034" gradientUnits="userSpaceOnUse">
+            <stop stop-color="#A97B4C" />
+            <stop offset="1" stop-color="#9C6841" stop-opacity="0" />
+          </linearGradient>
+          <linearGradient id="paint12_linear" x1="70.9666" y1="36.573" x2="69.9566" y2="104.33" gradientUnits="userSpaceOnUse">
+            <stop stop-color="#9A3436" />
+            <stop offset="1" stop-color="#D2484A" />
+          </linearGradient>
+          <linearGradient id="paint13_linear" x1="98" y1="36" x2="77" y2="82" gradientUnits="userSpaceOnUse">
+            <stop stop-color="#FF9C9E" />
+            <stop offset="0.833333" stop-color="#FF5659" />
+          </linearGradient>
+          <linearGradient id="paint14_linear" x1="70.9665" y1="36.573" x2="70.0408" y2="98.684" gradientUnits="userSpaceOnUse">
+            <stop stop-color="#FF5659" />
+            <stop offset="1" stop-color="#FF9698" />
+          </linearGradient>
+          <linearGradient id="paint15_linear" x1="82.0213" y1="88.3893" x2="40.226" y2="42.898" gradientUnits="userSpaceOnUse">
+            <stop offset="0.390625" stop-color="#FF8688" />
+            <stop offset="1" stop-color="#FF8688" stop-opacity="0" />
+          </linearGradient>
+        </defs>
+      </svg>
+    </div>
+  </div>
+
+  <!-- PLAY GAME BUTTON -->
+  <button id="playGameBtn">Play Game</button>
+
+  <!-- 4) GAME POPUP -->
+  <div class="game-popup" id="gamePopup">
+    <div class="popup-content">
+      <h2>Pick a Game!</h2>
+      <button class="game-button" id="matchBtn">Match the Chocolates</button>
+      <button class="game-button" id="wordSearchBtn">Find the Words</button>
+
+      <!-- MEMORY MATCH GAME -->
+      <div id="matchGame" class="hidden">
+        <h3>Memory Match</h3>
+        <div class="memory-grid" id="memoryGrid"></div>
+        <p id="matchStatus"></p>
+      </div>
+
+      <!-- WORD SEARCH GAME -->
+      <div id="wordSearchGame" class="hidden wordsearch-area">
+        <h3>Chocolate Word Search</h3>
+        <table class="wordsearch-grid" id="wsGrid"></table>
+        <div class="words-list">
+          <p><strong>Words to Find:</strong></p>
+          <ul id="wsWords"></ul>
+        </div>
+        <p id="wsMessage" style="color: #e44e51; margin-top: 10px;"></p>
+      </div>
+
+      <!-- GAME COMPLETE SCREEN (shared) -->
+      <div id="gameCompleteScreen" class="game-complete hidden">
+        <h2 id="gameCompleteMsg"></h2>
+        <button class="game-button" id="retryBtn">Retry</button>
+        <button class="game-button" id="rewardBtn">Claim Reward</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MUSIC PLAYER -->
+  <div class="music-player">
+    <!-- Note: We removed autoplay so that we can trigger play on user interaction -->
+    <audio id="backgroundAudio" loop muted>
+      <source src="music/chocsong.mp3" type="audio/mpeg">
+      Your browser does not support the audio element.
+    </audio>
+    <button id="muteButton" class="mute-button">🔇</button>
+  </div>
+
+  <!-- CONFETTI CONTAINER -->
+  <div class="confetti" id="confettiContainer"></div>
+
+  <!-- REWARD CONTAINER (Line by line fade-in) -->
+  <div id="rewardContainer" class="glow-box">
+    <!-- We'll dynamically inject paragraphs for line-by-line fade -->
+  </div>
+
+  <script>
+    /* ---------------------------------------------
+       1) BACKGROUND VIDEO LOGIC
+    ---------------------------------------------- */
+    const bgVideo = document.getElementById("bg-video");
+    const videos = [
+      "images/video1.mp4",
+      "images/video2.mp4",
+      "images/video3.mp4"
+    ];
+    let currentVideoIndex = 0;
+    bgVideo.src = videos[currentVideoIndex];
+    bgVideo.play();
+    bgVideo.addEventListener("ended", () => {
+      bgVideo.classList.remove("fade-in");
+      bgVideo.classList.add("fade-out");
+      setTimeout(() => {
+        currentVideoIndex = (currentVideoIndex + 1) % videos.length;
+        bgVideo.src = videos[currentVideoIndex];
+        bgVideo.play();
+        bgVideo.classList.remove("fade-out");
+        bgVideo.classList.add("fade-in");
+      }, 2000);
+    });
+
+    /* ---------------------------------------------
+       2) INITIAL MESSAGE (FADE IN LINE-BY-LINE)
+    ---------------------------------------------- */
+    const messageBox = document.getElementById("messageBox");
+    // Only 1 line? We can easily show multiple if you want more lines:
+    const lines = [
+      "Happy chocolate's day, cookie lets play some games and check your knowledge on chocolates.",
+      "I have made an interactive game with both of our favorite chocolates into consideration.",
+      "Complete the game and claim your reward!🍫"
+    ];
+
+    function fadeInLines(container, linesArray) {
+      container.innerHTML = "";
+      linesArray.forEach((text, i) => {
+        const p = document.createElement("p");
+        p.classList.add("fade-line");
+        p.textContent = text;
+        container.appendChild(p);
+      });
+      // reveal them in sequence
+      let index = 0;
+      function revealNext() {
+        if (index >= linesArray.length) return;
+        const fadeLine = container.querySelectorAll(".fade-line")[index];
+        fadeLine.classList.add("show");
+        index++;
+        setTimeout(revealNext, 800); // 800ms delay between lines
+      }
+      revealNext();
+    }
+    fadeInLines(messageBox, lines);
+
+    /* ---------------------------------------------
+       3) PLAY GAME BUTTON => HIDE MAIN & SHOW POPUP
+    ---------------------------------------------- */
+    const mainContainer = document.getElementById("mainContainer");
+    const playGameBtn = document.getElementById("playGameBtn");
+    const gamePopup = document.getElementById("gamePopup");
+
+    playGameBtn.addEventListener("click", () => {
+      mainContainer.style.display = "none"; 
+      playGameBtn.style.display = "none"; // Hide the button
+      gamePopup.classList.add("active");
+    });
+
+    /* ---------------------------------------------
+       4) MEMORY MATCH GAME
+    ---------------------------------------------- */
+    const matchBtn = document.getElementById("matchBtn");
+    const wordSearchBtn = document.getElementById("wordSearchBtn");
+    const matchGame = document.getElementById("matchGame");
+    const wordSearchGame = document.getElementById("wordSearchGame");
+    const matchStatus = document.getElementById("matchStatus");
+
+    const memoryGrid = document.getElementById("memoryGrid");
+    let firstCard, secondCard;
+    let hasFlippedCard = false;
+    let lockBoard = false;
+    let matchesFound = 0;
+
+    const cardArray = [
+      { name: "choco1", img: "images/choco1.png" },
+      { name: "choco1", img: "images/choco1.png" },
+      { name: "choco2", img: "images/choco2.png" },
+      { name: "choco2", img: "images/choco2.png" },
+      { name: "choco3", img: "images/choco3.png" },
+      { name: "choco3", img: "images/choco3.png" },
+      { name: "choco4", img: "images/choco4.png" },
+      { name: "choco4", img: "images/choco4.png" }
+    ];
+
+    function startMemoryGame() {
+      matchGame.classList.remove("hidden");
+      wordSearchGame.classList.add("hidden");
+      gameCompleteScreen.classList.add("hidden");
+
+      memoryGrid.innerHTML = "";
+      matchStatus.textContent = "";
+      [hasFlippedCard, lockBoard] = [false, false];
+      [firstCard, secondCard] = [null, null];
+      matchesFound = 0;
+
+      const shuffled = cardArray.sort(() => 0.5 - Math.random());
+      shuffled.forEach((card) => {
+        const cardElement = document.createElement("div");
+        cardElement.classList.add("memory-card");
+        cardElement.innerHTML = `
+          <img class="front-face" src="${card.img}" alt="${card.name}" />
+          <div class="back-face"></div>
+        `;
+        cardElement.dataset.name = card.name;
+        memoryGrid.appendChild(cardElement);
+        cardElement.addEventListener("click", flipCard);
+      });
+    }
+
+    function flipCard() {
+      if (lockBoard) return;
+      if (this === firstCard) return;
+      this.classList.add("flipped");
+      if (!hasFlippedCard) {
+        hasFlippedCard = true;
+        firstCard = this;
+        return;
+      }
+      secondCard = this;
+      hasFlippedCard = false;
+      checkForMatch();
+    }
+
+    function checkForMatch() {
+      const isMatch = firstCard.dataset.name === secondCard.dataset.name;
+      isMatch ? disableCards() : unflipCards();
+    }
+
+    function disableCards() {
+      firstCard.removeEventListener("click", flipCard);
+      secondCard.removeEventListener("click", flipCard);
+      matchesFound++;
+      if (matchesFound === cardArray.length / 2) {
+        matchStatus.textContent = "You matched them all!";
+        showGameComplete("You matched them all!");
+      }
+      resetBoard();
+    }
+
+    function unflipCards() {
+      lockBoard = true;
+      setTimeout(() => {
+        firstCard.classList.remove("flipped");
+        secondCard.classList.remove("flipped");
+        resetBoard();
+      }, 1000);
+    }
+
+    function resetBoard() {
+      [hasFlippedCard, lockBoard] = [false, false];
+      [firstCard, secondCard] = [null, null];
+    }
+
+    /* ---------------------------------------------
+       5) WORD SEARCH GAME
+    ---------------------------------------------- */
+    const wsGrid = document.getElementById("wsGrid");
+    const wsWordsList = document.getElementById("wsWords");
+    const wsMessage = document.getElementById("wsMessage");
+
+    const wordList = [
+      "PERK", "MUNCH", "DAIRYMILK", "MILKYBAR",
+      "TOBLERONE", "GEMS", "SKITTLES", "ECLAIRS", "KOPIKO"
+    ];
+    const GRID_SIZE = 12; 
+    let puzzleData = [];
+    let placedWords = [];
+    let foundCount = 0;
+
+    function initWordSearch() {
+      wordSearchGame.classList.remove("hidden");
+      matchGame.classList.add("hidden");
+      gameCompleteScreen.classList.add("hidden");
+
+      wsGrid.innerHTML = "";
+      wsWordsList.innerHTML = "";
+      wsMessage.textContent = "";
+      foundCount = 0;
+      placedWords = [];
+
+      // Show the words
+      wordList.forEach(w => {
+        const li = document.createElement("li");
+        li.textContent = w;
+        li.id = `word-${w}`;
+        wsWordsList.appendChild(li);
+      });
+
+      puzzleData = [];
+      for (let r = 0; r < GRID_SIZE; r++) {
+        const row = [];
+        for (let c = 0; c < GRID_SIZE; c++) {
+          row.push({ letter: "", word: null, indexInWord: null, found: false });
+        }
+        puzzleData.push(row);
+      }
+
+      wordList.forEach((word) => {
+        placeWord(word);
+      });
+
+      const letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+      for (let r = 0; r < GRID_SIZE; r++) {
+        for (let c = 0; c < GRID_SIZE; c++) {
+          if (puzzleData[r][c].letter === "") {
+            puzzleData[r][c].letter = letters.charAt(Math.floor(Math.random() * letters.length));
+          }
+        }
+      }
+
+      for (let r = 0; r < GRID_SIZE; r++) {
+        const rowEl = document.createElement("tr");
+        for (let c = 0; c < GRID_SIZE; c++) {
+          const cellEl = document.createElement("td");
+          cellEl.textContent = puzzleData[r][c].letter;
+          cellEl.dataset.row = r;
+          cellEl.dataset.col = c;
+          rowEl.appendChild(cellEl);
+        }
+        wsGrid.appendChild(rowEl);
+      }
+
+      addHighlightEvents();
+    }
+
+    function placeWord(word) {
+      const length = word.length;
+      let placed = false;
+      let attempts = 0;
+      while (!placed && attempts < 50) {
+        attempts++;
+        const orientation = Math.floor(Math.random() * 2);
+        if (orientation === 0) {
+          // Horizontal
+          const row = Math.floor(Math.random() * GRID_SIZE);
+          const colStart = Math.floor(Math.random() * (GRID_SIZE - length));
+          let canPlace = true;
+          for (let i = 0; i < length; i++) {
+            if (puzzleData[row][colStart + i].letter !== "") {
+              canPlace = false;
+              break;
+            }
+          }
+          if (canPlace) {
+            for (let i = 0; i < length; i++) {
+              puzzleData[row][colStart + i].letter = word[i];
+              puzzleData[row][colStart + i].word = word;
+              puzzleData[row][colStart + i].indexInWord = i;
+            }
+            placed = true;
+            placedWords.push(word);
+          }
+        } else {
+          // Vertical
+          const col = Math.floor(Math.random() * GRID_SIZE);
+          const rowStart = Math.floor(Math.random() * (GRID_SIZE - length));
+          let canPlace = true;
+          for (let i = 0; i < length; i++) {
+            if (puzzleData[rowStart + i][col].letter !== "") {
+              canPlace = false;
+              break;
+            }
+          }
+          if (canPlace) {
+            for (let i = 0; i < length; i++) {
+              puzzleData[rowStart + i][col].letter = word[i];
+              puzzleData[rowStart + i][col].word = word;
+              puzzleData[rowStart + i][col].indexInWord = i;
+            }
+            placed = true;
+            placedWords.push(word);
+          }
+        }
+      }
+    }
+
+    function addHighlightEvents() {
+      let isDragging = false;
+      let startRow = null, startCol = null;
+      let endRow = null, endCol = null;
+
+      wsGrid.addEventListener("mousedown", (e) => {
+        if (e.target.tagName === "TD") {
+          isDragging = true;
+          startRow = parseInt(e.target.dataset.row);
+          startCol = parseInt(e.target.dataset.col);
+          endRow = startRow;
+          endCol = startCol;
+        }
+      });
+      wsGrid.addEventListener("mouseup", (e) => {
+        if (!isDragging) return;
+        isDragging = false;
+        if (e.target.tagName === "TD") {
+          endRow = parseInt(e.target.dataset.row);
+          endCol = parseInt(e.target.dataset.col);
+        }
+        checkHighlight(startRow, startCol, endRow, endCol);
+      });
+      wsGrid.addEventListener("mouseover", (e) => {
+        if (isDragging && e.target.tagName === "TD") {
+          endRow = parseInt(e.target.dataset.row);
+          endCol = parseInt(e.target.dataset.col);
+        }
+      });
+    }
+
+    function checkHighlight(sr, sc, er, ec) {
+      if (sr !== er && sc !== ec) {
+        return;
+      }
+      let cells = [];
+      if (sr === er) {
+        const row = sr;
+        const startC = Math.min(sc, ec);
+        const endC = Math.max(sc, ec);
+        for (let c = startC; c <= endC; c++) {
+          cells.push({ r: row, c });
+        }
+      } else {
+        const col = sc;
+        const startR = Math.min(sr, er);
+        const endR = Math.max(sr, er);
+        for (let r = startR; r <= endR; r++) {
+          cells.push({ r, c: col });
+        }
+      }
+      let checkStrForward = "";
+      cells.forEach(({r,c}) => {
+        checkStrForward += puzzleData[r][c].letter;
+      });
+      let checkStrReverse = checkStrForward.split("").reverse().join("");
+
+      if (wordList.includes(checkStrForward) || wordList.includes(checkStrReverse)) {
+        highlightCells(cells);
+        markWordFound(checkStrForward, checkStrReverse);
+      }
+    }
+
+    function highlightCells(cells) {
+      cells.forEach(({ r, c }) => {
+        puzzleData[r][c].found = true;
+        const cellEl = wsGrid.querySelector(`td[data-row='${r}'][data-col='${c}']`);
+        cellEl.classList.add("highlight");
+      });
+    }
+
+    function markWordFound(forward, reverse) {
+      let foundWord = wordList.find(w => w === forward || w === reverse);
+      if (foundWord) {
+        const liEl = document.getElementById(`word-${foundWord}`);
+        if (liEl) {
+          liEl.classList.add("found-word");
+        }
+        foundCount++;
+        if (foundCount === wordList.length) {
+          wsMessage.textContent = "You found them all!";
+          showGameComplete("You found them all!");
+        }
+      }
+    }
+
+    /* ---------------------------------------------
+       6) GAME COMPLETION SCREEN + CONFETTI
+    ---------------------------------------------- */
+    const gameCompleteScreen = document.getElementById("gameCompleteScreen");
+    const gameCompleteMsg = document.getElementById("gameCompleteMsg");
+    const confettiContainer = document.getElementById("confettiContainer");
+    const retryBtn = document.getElementById("retryBtn");
+    const rewardBtn = document.getElementById("rewardBtn");
+
+    function showGameComplete(msg) {
+      launchConfetti();
+      gameCompleteMsg.textContent = msg;
+      gameCompleteScreen.classList.remove("hidden");
+    }
+
+    retryBtn.addEventListener("click", () => {
+      stopConfetti();
+      if (!matchGame.classList.contains("hidden")) {
+        startMemoryGame();
+      } else if (!wordSearchGame.classList.contains("hidden")) {
+        initWordSearch();
+      }
+    });
+
+    rewardBtn.addEventListener("click", () => {
+      stopConfetti();
+      gamePopup.classList.remove("active");
+      showRewardLines();
+    });
+
+    /* SIMPLE CONFETTI */
+    let confettiInterval;
+    function launchConfetti() {
+      confettiInterval = setInterval(() => {
+        createConfettiPiece();
+      }, 100);
+
+      setTimeout(() => {
+        stopConfetti();
+      }, 2500);
+    }
+
+    function createConfettiPiece() {
+      const confetti = document.createElement("div");
+      confetti.classList.add("confetti-piece");
+      const size = Math.random() * 10 + 5;
+      confetti.style.width = `${size}px`;
+      confetti.style.height = `${size}px`;
+      confetti.style.backgroundColor = getRandomColor();
+      confetti.style.position = "absolute";
+      confetti.style.top = "0";
+      confetti.style.left = Math.random() * 100 + "%";
+      confetti.style.opacity = Math.random();
+      confettiContainer.appendChild(confetti);
+
+      const fallDuration = Math.random() * 2 + 3;
+      confetti.animate([
+        { transform: `translateY(0)` },
+        { transform: `translateY(100vh) rotate(${Math.random()*360}deg)` }
+      ], {
+        duration: fallDuration * 1000,
+        easing: "ease-out",
+        iterations: 1,
+        fill: "forwards"
+      });
+
+      setTimeout(() => {
+        confetti.remove();
+      }, fallDuration * 1000);
+    }
+
+    function stopConfetti() {
+      if (confettiInterval) {
+        clearInterval(confettiInterval);
+        confettiInterval = null;
+      }
+    }
+
+    function getRandomColor() {
+      const colors = ["#f44336", "#e91e63", "#9c27b0", "#ff9800", "#ffc107", "#ffeb3b", "#8bc34a", "#00bcd4"];
+      return colors[Math.floor(Math.random() * colors.length)];
+    }
+
+    /* ---------------------------------------------
+       7) REWARD CONTAINER LINE-BY-LINE
+    ---------------------------------------------- */
+    const rewardContainer = document.getElementById("rewardContainer");
+
+    const rewardLines = [
+      "🍫 \"Life is full of flavors, but my favorite one?\"",
+      "🍫 \"YOU, my Cookie.\"",
+      "🍫 \"Some people crave chocolate... but all I crave is you.\"",
+      "🍫 \"Sweet, comforting, and absolutely irresistible—just like my love for you!\"",
+      "🍫 \"If love was a dessert, ours would be an endless supply of chocolate, melting into forever.\"",
+      "🍫 \"So, my Cookie… Today, I gift you my sweetest love—wrapped in endless hugs, sealed with kisses, and sprinkled with laughter.\"",
+      "🍫 \"Happy Chocolate Day, my love! 🍫💕\""
+    ];
+
+    function showRewardLines() {
+      rewardContainer.innerHTML = "";
+      rewardContainer.style.display = "block";
+      // fade in each line
+      rewardLines.forEach((text, i) => {
+        const p = document.createElement("p");
+        p.classList.add("fade-line");
+        p.textContent = text;
+        rewardContainer.appendChild(p);
+      });
+      let index = 0;
+      function revealNext() {
+        if (index >= rewardLines.length) return;
+        const fadeLine = rewardContainer.querySelectorAll(".fade-line")[index];
+        fadeLine.classList.add("show");
+        index++;
+        setTimeout(revealNext, 1000); // 1s between lines
+      }
+      revealNext();
+    }
+
+    // When the user clicks anywhere on the window, try to play the audio if it isn't already playing.
+  window.addEventListener('click', function() {
+    const audio = document.getElementById('backgroundAudio');
+    if (audio.paused) {
+      audio.play().then(() => {
+        console.log("Audio started playing.");
+      }).catch((error) => {
+        console.error("Error playing audio:", error);
+      });
+    }
+});
+
+// Mute toggle button event listener.
+  document.getElementById('muteButton').addEventListener('click', function(e){
+    e.stopPropagation();
+    const audio = document.getElementById('backgroundAudio');
+    audio.muted = !audio.muted;
+    this.textContent = audio.muted ? '🔇' : '🔊';
+});
+
+    /* ---------------------------------------------
+       INIT HANDLERS FOR GAME BUTTONS
+    ---------------------------------------------- */
+    matchBtn.addEventListener("click", startMemoryGame);
+    wordSearchBtn.addEventListener("click", initWordSearch);
+  </script>
+</body>
+</html>
