@@ -1,0 +1,839 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Promise Day Interactive</title>
+  <link href="https://fonts.googleapis.com/css?family=Dancing+Script&display=swap" rel="stylesheet">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    html, body {
+      height: 100%;
+      overflow: hidden;
+      font-family: sans-serif;
+    }
+    body {
+      margin: 0;
+      overflow: hidden;
+    }
+    
+    .background {
+      width: 100vw;
+      height: 100vh;
+      background: #fff186;
+      position: fixed;
+      top: 0;
+      left: 0;
+      z-index: -10;
+    }
+    
+    .background span {
+      width: 20vmin;
+      height: 20vmin;
+      border-radius: 50%;
+      backface-visibility: hidden;
+      position: absolute;
+      animation: move linear infinite;
+    }
+    
+    @keyframes move {
+      100% {
+        transform: translate3d(0, 0, 1px) rotate(360deg);
+      }
+    }
+    
+    /* Generate Random Particles */
+    .background span:nth-child(n) {
+      background-color: #ebc055;
+      top: calc(100% * var(--random));
+      left: calc(100% * var(--random));
+      animation-duration: calc(6s + var(--random-time));
+      animation-delay: calc(-10s + var(--random-time));
+      transform-origin: calc(50% - var(--random-origin)) calc(50% - var(--random-origin));
+      box-shadow: calc(2 * 20vmin * var(--random-x)) 0 calc((var(--random) + 0.5) * 20vmin * 0.5) currentColor;
+    }
+    
+    #banner {
+      position: fixed;
+      top: -100px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 80%;
+      padding: 20px;
+      background: rgba(255, 255, 255, 0.85);
+      border-radius: 10px;
+      text-align: center;
+      font-family: 'Dancing Script', cursive;
+      font-size: 36px;
+      opacity: 0;
+      z-index: 10;
+    }
+    #banner.show {
+      animation: slideDown 1s forwards, glow 3s infinite 2s;
+    }
+    @keyframes slideDown {
+      from { top: -100px; opacity: 0; }
+      to { top: 20px; opacity: 1; }
+    }
+    @keyframes glow {
+      0%, 100% { text-shadow: 0 0 10px #ffdd99; }
+      50% { text-shadow: 0 0 20px #ffcc00; }
+    }
+    #bannerText {
+      display: inline-block;
+      white-space: nowrap;
+      overflow: hidden;
+      border-right: 2px solid;
+    }
+    
+    .floating-emoji {
+      position: absolute;
+      font-size: 30px; /* Smaller size */
+      cursor: pointer;
+      user-select: none;
+      animation: floatMove 6s ease-in-out infinite;
+    }
+    
+    /* Fixed Positions */
+    .floating-emoji:nth-child(1) { top: 5%; left: 3%; }   /* Top Left */
+    .floating-emoji:nth-child(2) { top: 5%; right: 3%; }  /* Top Right */
+    .floating-emoji:nth-child(3) { bottom: 10%; left: 3%; } /* Bottom Left */
+    .floating-emoji:nth-child(4) { bottom: 10%; right: 3%; } /* Bottom Right */
+    .floating-emoji:nth-child(5) { bottom: 10%; left: 25%; } /* Bottom Middle Left */
+    .floating-emoji:nth-child(6) { bottom: 10%; right: 25%; } /* Bottom Middle Right */
+    .floating-emoji:nth-child(7) { top: 50%; left: 3%; }  /* Middle Left */
+    .floating-emoji:nth-child(8) { top: 50%; right: 3%; } /* Middle Right */
+    
+    /* Floating animation */
+    @keyframes floatMove {
+      0%   { transform: translateY(0) rotate(0deg); }
+      50%  { transform: translateY(-10px) rotate(10deg); }
+      100% { transform: translateY(0) rotate(0deg); }
+    }
+    .floating-emoji .click-msg {
+      display: none;
+      font-size: 14px;
+      color: #333;
+      position: absolute;
+      top: 45px;
+      left: -10px;
+    }
+    .floating-emoji:hover .click-msg {
+      display: block;
+    }
+    
+    
+    /* Increase Envelope Grid Size */
+      #envelopeGrid {
+        display: none;
+        width: 800px;  /* Take most of the screen width */
+        margin: 0 auto;
+        display: grid;
+        grid-template-columns: repeat(4, 180px);
+        gap: 15px;
+        justify-content: center;
+        align-items: center;
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%)scale(0.5);
+        z-index: 5;
+      }
+
+      /* Envelope Wrapper */
+      .wrapper {
+        width: 180px;
+        height: 120px;
+        background-color: #3760C9;
+        position: relative;
+        cursor: pointer;
+        opacity: 0;
+        transition: transform 0.5s ease, opacity 0.5s ease;
+      }
+
+      .wrapper.appear {
+        opacity: 1;
+      }
+
+      /* Open Envelope Effect */
+      .wrapper.expanded {
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%) scale(2);
+        z-index: 300;
+      }
+
+      /* Envelope Lid */
+      .lid {
+        position: absolute;
+        height: 100%;
+        width: 100%;
+        top: 0;
+        left: 0;
+        border-right: 90px solid transparent;
+        border-bottom: 60px solid transparent;
+        border-left: 90px solid transparent;
+        transform-origin: top;
+        transition: transform 0.5s linear;
+      }
+      
+      .lid.one {
+        border-top: 60px solid #658ced;
+        transform: rotateX(0deg);
+        z-index: 3;
+      }
+      
+      .lid.two {
+        border-top: 60px solid #3760C9;
+        transform: rotateX(90deg);
+        z-index: 1;
+      }
+      
+      /* Open Envelope Lid */
+      .wrapper.expanded .lid.one {
+        transform: rotateX(-180deg);
+      }
+
+      .wrapper.expanded .lid.two {
+        transform: rotateX(0deg);
+      }
+
+      
+      /* Letter Styling */
+      .letter {
+        position: absolute;
+        top: 0;
+        width: 90%;
+        height: 100%;
+        background-color: white;
+        border-radius: 15px;
+        z-index: 5;
+        transition: transform 0.1s ease, opacity 0.3s ease-in-out !important;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        font-family: 'Dancing Script', cursive;
+        font-size: 16px;
+        color: #3B4049;
+        opacity: 0;
+        left: 5%;
+        padding: 10px;
+        text-align: center;
+        overflow-wrap: break-word;
+      }
+
+      
+      .wrapper.expanded .letter {
+        transform: translateY(-60px);  /* Raise the letter higher */
+        opacity: 1;
+       
+      }
+      
+      .wrapper.half-open .lid.one {
+        transform: rotateX(-120deg); /* Keep it half-open */
+      }
+      
+      .wrapper.half-open .letter {
+        transform: translateY(-30px); /* Keep the letter partly out */
+        opacity: 1;
+        z-index: 4;
+      }
+      
+      .letter p {
+        text-align: center;
+        margin: 0;
+        opacity: 0;
+        transition: opacity 0.5s ease-in-out;
+        width: 100%;
+      }
+      
+      
+      .letter.textVisible p {
+        opacity: 1;
+      }
+
+      /* MUSIC PLAYER */
+    .music-player {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      z-index: 100;
+    }
+    .mute-button {
+      background: rgba(255, 255, 255, 0.3);
+      border: none;
+      border-radius: 50%;
+      font-size: 24px;
+      padding: 8px 10px;
+      cursor: pointer;
+      color: #fff;
+      outline: none;
+      transition: background 0.3s;
+    }
+    .mute-button:hover {
+      background: rgba(255, 255, 255, 0.5);
+    }
+
+    #finalEnvelope {
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%) scale(0);
+        width: 300px;
+        height: 200px;
+        background-color: #3760C9;
+        border: 4px solid #658ced;
+        border-radius: 10px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        z-index: 400;
+        transition: transform 0.5s ease, opacity 0.5s ease;
+        opacity: 0;
+      }
+      #finalEnvelope.show {
+        transform: translate(-50%, -50%) scale(1);
+        opacity: 1;
+      }
+      /* Popping Lock Animation */
+      @keyframes popLock {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-10px); }
+      }
+      /* The lock is now an image (a GIF) */
+      #finalLock {
+        width: 80px;
+        height: auto;
+        margin-bottom: 10px;
+        cursor: pointer;
+        animation: popLock 1s infinite ease-in-out;
+      }
+      #finalInstruction {
+        font-size: 20px;
+        font-family: 'Dancing Script', cursive;
+        color: #fff;
+      }
+
+      /* Bouncing Key Animation */
+      @keyframes bounceKey {
+        0% { transform: translate(0px, 0px); }
+        25% { transform: translate(20px, -30px) rotate(5deg); }
+        50% { transform: translate(-20px, 30px) rotate(-5deg); }
+        75% { transform: translate(30px, -20px) rotate(5deg); }
+        100% { transform: translate(0px, 0px); }
+}
+      #wingedKey {
+        display: none;
+        position: fixed;
+        width: 60px;
+        height: auto;
+        z-index: 410;
+        cursor: grab;
+        animation: bounceKey 1.5s infinite alternate ease-in-out;
+      }
+      
+      /* ======================================================
+         FINAL PROMISE TEXT & FALLING HEARTS
+         ====================================================== */
+         #finalPromiseContainer {
+          position: fixed;
+          top: 60%;
+          left: 50%;
+          transform: translate(-50%, -50%)scale(0.8);
+          width: 80%;
+          max-width: 800px;
+          max-height: 80%;
+          background-color: rgba(255, 255, 255, 0.9);
+          border-radius: 15px;
+          padding: 30px;
+          box-shadow: 
+            0 0 10px rgba(255, 100, 100, 0.5), 
+            0 0 20px rgba(255, 100, 100, 0.3), 
+            0 0 30px rgba(255, 100, 100, 0.2);
+          
+          z-index: 500;
+          opacity: 0;
+          transition: opacity 0.5s ease;
+          animation: glowBorder 3s infinite alternate;
+        }
+    
+        @keyframes glowBorder {
+          0% {
+            box-shadow: 
+              0 0 10px rgba(255, 100, 100, 0.5), 
+              0 0 20px rgba(255, 100, 100, 0.3), 
+              0 0 30px rgba(255, 100, 100, 0.2);
+          }
+          100% {
+            box-shadow: 
+              0 0 20px rgba(255, 100, 100, 0.7), 
+              0 0 30px rgba(255, 100, 100, 0.5), 
+              0 0 40px rgba(255, 100, 100, 0.3);
+          }
+        }
+    
+        #finalPromiseText {
+          font-family: 'Dancing Script', cursive;
+          font-size: 20px;
+          line-height: 1.6;
+          text-align: center;
+          color: #333;
+          overflow-wrap: break-word;
+        }
+      .falling-heart {
+        position: fixed;
+        top: -50px;
+        font-size: 32px;
+        animation: fall 4s linear forwards;
+        z-index: 460;
+      }
+      @keyframes fall {
+        0% { top: -50px; opacity: 1; }
+        100% { top: 110%; opacity: 0; }
+      }
+    </style>
+
+</head>
+</head>
+<body>
+  <div class="background">
+    <span></span>
+    <span></span>
+    <span></span>
+    <span></span>
+    <span></span>
+    <span></span>
+    <span></span>
+    <span></span>
+    <span></span>
+    <span></span>
+    <span></span>
+    <span></span>
+    <span></span>
+    <span></span>
+    <span></span>
+    <span></span>
+    <span></span>
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+  
+  <div id="banner">
+    <span id="bannerText"></span>
+  </div>
+  
+  
+  <!-- Floating Envelope Emojis -->
+  <div class="floating-emoji" data-message="You are loved!">
+    💌<span class="click-msg">click me</span>
+  </div>
+  <div class="floating-emoji" data-message="Joy is in the air!">
+    💌<span class="click-msg">click me</span>
+  </div>
+  <div class="floating-emoji" data-message="A promise awaits!">
+    💌<span class="click-msg">click me</span>
+  </div>
+  <div class="floating-emoji" data-message="Happiness is near!">
+    💌<span class="click-msg">click me</span>
+  </div>
+  <div class="floating-emoji" data-message="You are mine">
+    💌<span class="click-msg">click me</span>
+  </div>
+  <div class="floating-emoji" data-message="I will love you always">
+    💌<span class="click-msg">click me</span>
+  </div>
+  <div class="floating-emoji" data-message="You are my everything">
+    💌<span class="click-msg">click me</span>
+  </div>
+  <div class="floating-emoji" data-message="Life without you is meaningless">
+    💌<span class="click-msg">click me</span>
+  </div>
+  <!-- MUSIC PLAYER -->
+  <div class="music-player">
+    <!-- Note: We removed autoplay so that we can trigger play on user interaction -->
+    <audio id="backgroundAudio" loop muted>
+      <source src="music/promise.mp3" type="audio/mpeg">
+      Your browser does not support the audio element.
+    </audio>
+    <button id="muteButton" class="mute-button">🔇</button>
+  </div>
+  <!-- Envelope Grid -->
+  <div id="envelopeGrid">
+    <div class="wrapper" data-promise="😘I promise to always make you smile, even on your worst days, because your happiness is the most precious thing in my world.😘">
+      <div class="lid one"></div>
+      <div class="lid two"></div>
+      <div class="letter"><p></p></div>
+    </div>
+    <div class="wrapper" data-promise="🫣I promise to listen, even when you talk about things I don’t understand, because your voice is my favorite sound.🫣">
+      <div class="lid one"></div>
+      <div class="lid two"></div>
+      <div class="letter"><p></p></div>
+    </div>
+    <div class="wrapper" data-promise="😎I promise to hold your hand through every challenge, every fear, and every uncertain moment—forever.😎">
+        <div class="lid one"></div>
+        <div class="lid two"></div>
+        <div class="letter"><p></p></div>
+      </div>
+      <div class="wrapper" data-promise="😍I promise to remind you every day how beautiful you are, not just on the outside but in every little way that makes you, you.😍">
+        <div class="lid one"></div>
+        <div class="lid two"></div>
+        <div class="letter"><p></p></div>
+      </div>
+      <div class="wrapper" data-promise="😉I promise to never let a day go by without telling you that I love you, no matter how far or close we are.😉">
+        <div class="lid one"></div>
+        <div class="lid two"></div>
+        <div class="letter"><p></p></div>
+      </div>
+      <div class="wrapper" data-promise="🙂‍↕️I promise to protect you—not just from the world, but from your own self-doubts, because you are stronger than you realize.🙂‍↕️">
+        <div class="lid one"></div>
+        <div class="lid two"></div>
+        <div class="letter"><p></p></div>
+      </div>
+      <div class="wrapper" data-promise="😤I promise to be your biggest cheerleader, celebrating your smallest victories as if they were the greatest achievements.😤">
+        <div class="lid one"></div>
+        <div class="lid two"></div>
+        <div class="letter"><p></p></div>
+      </div>
+      <div class="wrapper" data-promise="🤗I promise to always be the one you can call, whether it's for a serious talk, a rant, or just because you miss my voice.🤗">
+        <div class="lid one"></div>
+        <div class="lid two"></div>
+        <div class="letter"><p></p></div>
+      </div>
+      <div class="wrapper" data-promise="😼I promise to support your dreams, push you forward when you need it, and catch you when you fall.😼">
+        <div class="lid one"></div>
+        <div class="lid two"></div>
+        <div class="letter"><p></p></div>
+      </div>
+      <div class="wrapper" data-promise="👉👈I promise to make every moment with you special, even if it’s just us sitting in silence, because being with you is enough.👉👈">
+        <div class="lid one"></div>
+        <div class="lid two"></div>
+        <div class="letter"><p></p></div>
+      </div>
+      <div class="wrapper" data-promise="😁I promise to keep annoying you forever, because I know you secretly love it.😁">
+        <div class="lid one"></div>
+        <div class="lid two"></div>
+        <div class="letter"><p></p></div>
+      </div>
+      <div class="wrapper" data-promise="🫰I promise to never let distance weaken us, because what we have is stronger than any miles between us.🫰">
+        <div class="lid one"></div>
+        <div class="lid two"></div>
+        <div class="letter"><p></p></div>
+      </div>
+      <div class="wrapper" data-promise="💪I promise to always be honest with you, because love is built on trust, and you will always have mine.💪">
+        <div class="lid one"></div>
+        <div class="lid two"></div>
+        <div class="letter"><p></p></div>
+      </div>
+      <div class="wrapper" data-promise="🫠I promise to never stop looking at you the way I did the first time I realized I was in love with you.🫠">
+        <div class="lid one"></div>
+        <div class="lid two"></div>
+        <div class="letter"><p></p></div>
+      </div>
+      <div class="wrapper" data-promise="🥹I promise to be yours—not just today, not just tomorrow, but for every lifetime I get to have you in.🥹">
+        <div class="lid one"></div>
+        <div class="lid two"></div>
+        <div class="letter"><p></p></div>
+      </div>
+      <div class="wrapper" data-promise="😌I promise to always be patient, even when you're overthinking or worried, because your heart deserves to feel safe with me.😌">
+        <div class="lid one"></div>
+        <div class="lid two"></div>
+        <div class="letter"><p></p></div>
+      </div>
+  </div>
+  
+  <!-- Final Envelope with Lock & Instruction -->
+  <div id="finalEnvelope">
+    <img id="finalLock" src="images/lock.png" alt="Lock">
+    <div id="finalInstruction">Find the key to open me</div>
+  </div>
+  
+  <!-- Winged Key (Hidden until all envelopes are opened) -->
+  <img id="wingedKey" src="images/keys.png" alt="Key" draggable="true">
+  
+  <!-- Final Promise (Will be revealed after unlocking) -->
+  <div id="finalPromiseContainer">
+    <div id="finalPromiseText"></div>
+  </div>
+  
+  <!-- ======================================================
+       JAVASCRIPT: INTERACTIONS & ANIMATIONS
+       ====================================================== -->
+  <script>
+  
+    document.addEventListener("DOMContentLoaded", () => {
+      document.querySelectorAll(".background span").forEach(span => {
+          span.style.setProperty("--random", Math.random());
+          span.style.setProperty("--random-time", Math.random() * 10 + "s");
+          span.style.setProperty("--random-origin", (Math.random() * 50 - 25) + "vw");
+          span.style.setProperty("--random-x", Math.random() > 0.5 ? -1 : 1);
+      });
+  });
+  
+  /// Utility: Typewriter effect
+  function typeWriter(element, text, speed, callback) {
+    element.textContent = "";
+    let i = 0;
+    let timer = setInterval(() => {
+      element.textContent += text.charAt(i);
+      i++;
+      if (i === text.length) {
+        clearInterval(timer);
+        if (callback) callback();
+      }
+    }, speed);
+  }
+  
+  window.addEventListener("load", () => {
+    const banner = document.getElementById("banner");
+    const bannerTextEl = document.getElementById("bannerText");
+    
+    // Banner animation
+    setTimeout(() => {
+      banner.classList.add("show");
+      typeWriter(bannerTextEl, "Promise Day - A Promise of Love", 80, () => {
+        // After banner typewriter, show envelope grid
+        setTimeout(() => {
+          const envelopeGrid = document.getElementById("envelopeGrid");
+          envelopeGrid.style.display = "grid";
+          
+          // Gradually make envelopes appear
+          const wrappers = document.querySelectorAll(".wrapper");
+          wrappers.forEach((wrapper, index) => {
+            setTimeout(() => {
+              wrapper.classList.add("appear");
+            }, index * 200);
+          });
+        }, 1000);
+      });
+    }, 1000);
+  });
+    
+  document.addEventListener("DOMContentLoaded", function () {
+    const emojis = document.querySelectorAll(".floating-emoji");
+  
+    emojis.forEach(emoji => {
+      // Click interaction
+      emoji.addEventListener("click", function () {
+        const msg = this.getAttribute("data-message");
+        const popup = document.createElement("div");
+        popup.style.position = "absolute";
+        popup.style.top = this.offsetTop + 50 + "px";
+        popup.style.left = this.offsetLeft + "px";
+        popup.style.background = "rgba(255,255,255,0.9)";
+        popup.style.padding = "5px 10px";
+        popup.style.borderRadius = "5px";
+        popup.style.fontFamily = "'Dancing Script', cursive";
+        popup.style.fontSize = "18px";
+        popup.style.zIndex = "1000"; // Ensure popups appear on top
+  
+        document.body.appendChild(popup);
+        typeWriter(popup, msg, 50, () => {
+          setTimeout(() => {
+            popup.style.transition = "opacity 0.5s";
+            popup.style.opacity = 0;
+            setTimeout(() => popup.remove(), 500);
+          }, 3000);
+        });
+      });
+    });
+  });
+  
+  // Typewriter Effect Function
+  function typeWriter(element, text, speed, callback) {
+    element.textContent = "";
+    let i = 0;
+    let timer = setInterval(() => {
+      element.textContent += text.charAt(i);
+      i++;
+      if (i === text.length) {
+        clearInterval(timer);
+        if (callback) callback();
+      }
+    }, speed);
+  }
+  
+  
+  // Typewriter Effect Function
+  function typeWriter(element, text, speed, callback) {
+    element.textContent = "";
+    let i = 0;
+    let timer = setInterval(() => {
+      element.textContent += text.charAt(i);
+      i++;
+      if (i === text.length) {
+        clearInterval(timer);
+        if (callback) callback();
+      }
+    }, speed);
+  }
+
+// Envelope opening logic
+document.addEventListener("DOMContentLoaded", function () {
+  const wrappers = document.querySelectorAll(".wrapper");
+  let openedEnvelopes = 0;
+  const totalEnvelopes = wrappers.length;
+
+  wrappers.forEach(wrapper => {
+      wrapper.addEventListener("click", function () {
+          if (this.classList.contains("expanded")) return;
+
+          this.classList.add("expanded");
+
+          const letterEl = this.querySelector(".letter");
+          const letterP = letterEl.querySelector("p");
+          const promiseText = this.getAttribute("data-promise");
+
+          letterP.textContent = promiseText;
+
+          setTimeout(() => {
+              letterEl.style.opacity = "1";
+              letterP.style.opacity = "1";
+
+              setTimeout(() => {
+                  this.classList.remove("expanded");
+                  this.classList.add("half-open");
+
+                  openedEnvelopes++;
+                  if (openedEnvelopes === totalEnvelopes) {
+                      showFinalEnvelope();
+                  }
+              }, 2000);
+          }, 200);
+      });
+  });
+});
+
+// Function to check collision between key and lock
+function isColliding(el1, el2) {
+  const rect1 = el1.getBoundingClientRect();
+  const rect2 = el2.getBoundingClientRect();
+
+  return !(
+      rect1.top > rect2.bottom ||
+      rect1.bottom < rect2.top ||
+      rect1.left > rect2.right ||
+      rect1.right < rect2.left
+  );
+}
+
+// Function to handle dragging of the key
+function enableKeyDragging() {
+  const key = document.getElementById("wingedKey");
+  const lock = document.getElementById("finalLock");
+
+  key.addEventListener("mousedown", (e) => {
+      let isDragging = true;
+      key.style.animation = "none"; // Stop bouncing animation
+
+      function moveAt(pageX, pageY) {
+          key.style.left = `${pageX - key.offsetWidth / 2}px`;
+          key.style.top = `${pageY - key.offsetHeight / 2}px`;
+
+          if (isColliding(key, lock)) {
+              unlockFinalEnvelope();
+          }
+      }
+
+      moveAt(e.pageX, e.pageY);
+
+      function onMouseMove(event) {
+          moveAt(event.pageX, event.pageY);
+      }
+
+      document.addEventListener("mousemove", onMouseMove);
+
+      document.addEventListener("mouseup", () => {
+          isDragging = false;
+          document.removeEventListener("mousemove", onMouseMove);
+      }, { once: true });
+  });
+}
+
+// Show Final Envelope & Key when all envelopes are opened
+function showFinalEnvelope() {
+  document.getElementById("envelopeGrid").style.display = "none";
+  const finalEnv = document.getElementById("finalEnvelope");
+  finalEnv.classList.add("show");
+
+  const key = document.getElementById("wingedKey");
+  key.style.display = "block";
+  
+  enableKeyDragging();
+}
+
+// Unlock Final Envelope & Reveal Final Promise
+function unlockFinalEnvelope() {
+  const lock = document.getElementById("finalLock");
+  const finalEnvelope = document.getElementById("finalEnvelope");
+
+  lock.style.transform = "rotate(90deg)";
+  document.getElementById("finalInstruction").textContent = "";
+
+  setTimeout(() => {
+      finalEnvelope.style.opacity = "0";
+  }, 800);
+
+  setTimeout(() => {
+      document.getElementById("wingedKey").style.display = "none";
+      lock.style.display = "none";
+
+      const finalPromiseContainer = document.getElementById("finalPromiseContainer");
+      const finalPromiseTextEl = document.getElementById("finalPromiseText");
+      finalPromiseContainer.style.opacity = "1";
+
+      finalPromiseTextEl.innerHTML = `
+          <p>
+          Cookie, I promise you… this is the last time we celebrate special days apart. No more distance, no more waiting.<br><br>
+          One day soon, you’ll wake up and I won’t be a voice on the phone or a text on a screen—I’ll be right there beside you.<br><br>
+          I promise to be there for all your sleepy mornings, your tough days, your happy moments, and everything in between.<br><br>
+          I promise to love you not just when it's easy, but when it's hard, because you are my forever, my safest place, my greatest love.<br><br>
+          <strong>Happy Promise Day, Cookie. Panda loves you endlessly, in every way, forever and always.</strong>
+          </p>
+      `;
+
+      spawnHearts();
+  }, 1000);
+}
+// When the user clicks anywhere on the window, try to play the audio if it isn't already playing.
+  window.addEventListener('click', function() {
+    const audio = document.getElementById('backgroundAudio');
+    if (audio.paused) {
+      audio.play().then(() => {
+        console.log("Audio started playing.");
+      }).catch((error) => {
+        console.error("Error playing audio:", error);
+      });
+    }
+});
+
+// Mute toggle button event listener.
+  document.getElementById('muteButton').addEventListener('click', function(e){
+    e.stopPropagation();
+    const audio = document.getElementById('backgroundAudio');
+    audio.muted = !audio.muted;
+    this.textContent = audio.muted ? '🔇' : '🔊';
+});
+
+// Falling Hearts Animation
+function spawnHearts() {
+  for (let i = 0; i < 10; i++) {
+      const heart = document.createElement("div");
+      heart.classList.add("falling-heart");
+      heart.textContent = "❤️";
+      heart.style.left = Math.random() * 100 + "%";
+      heart.style.animationDelay = Math.random() * 3 + "s";
+      document.body.appendChild(heart);
+      setTimeout(() => heart.remove(), 4000);
+  }
+}
+
+    </script>
+  </body>
+  </html>
+  
