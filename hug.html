@@ -1,0 +1,960 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Hug Day Experience</title>
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Poppins:wght@400;700&display=swap" rel="stylesheet">
+
+  <style>
+    /* RESET & BASICS */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    html, body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background: linear-gradient(to bottom, #0d1117, #1e90ff); /* fallback if canvas isn't shown */
+      font-family: 'Poppins', sans-serif;
+    }
+
+    /* BUBBLE BACKGROUND */
+    canvas {
+      display: block;
+      position: absolute;
+      top: 0;
+      left: 0;
+    }
+
+    
+
+    /* BANNER */
+    #banner {
+      position: absolute;
+      top: -80px; /* Start hidden above screen */
+      left: 50%;
+      transform: translateX(-50%);
+      font-family: 'Great Vibes', cursive;
+      font-size: 32px;
+      color: white;
+      text-shadow: 0 0 5px rgba(255,255,255,0.7);
+      z-index: 10;
+      padding: 10px 20px;
+    }
+
+    /* TYPEWRITER TEXT */
+    #typewriter-box {
+        position: absolute;
+        top: 10%;
+        left: 50%;
+        transform: translateX(-50%);
+        width: auto;
+        max-width: 600px;
+        padding: 15px 20px;
+        background: rgba(255, 255, 255, 0.15);
+        border-radius: 12px;
+        border: 2px solid rgba(255, 255, 255, 0.4);
+        box-shadow: 0 0 10px rgba(255, 255, 255, 0.2);
+        text-align: center;
+        z-index: 10;
+        display: none;
+      }
+      
+      #typewriter {
+        font-size: 22px;
+        color: #fff;
+        text-align: center;
+        font-family: 'Poppins', sans-serif;
+      }
+      
+
+    /* STICKERS CONTAINER */
+    #stickers-container {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none; /* Let clicks pass through */
+      z-index: 5;
+    }
+    .sticker {
+      position: absolute;
+      font-size: 32px; /* Adjust sticker size */
+    }
+    /* Glowing pulse stickers */
+    .glow {
+      animation: glowPulse 2s infinite;
+    }
+    @keyframes glowPulse {
+      0% {
+        transform: scale(1);
+        text-shadow: 0 0 5px #fff;
+      }
+      50% {
+        transform: scale(1.2);
+        text-shadow: 0 0 15px #ff99cc;
+      }
+      100% {
+        transform: scale(1);
+        text-shadow: 0 0 5px #fff;
+      }
+    }
+    /* MUSIC PLAYER */
+    .music-player {
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        z-index: 100;
+      }
+      .mute-button {
+        background: rgba(255, 255, 255, 0.3);
+        border: none;
+        border-radius: 50%;
+        font-size: 24px;
+        padding: 8px 10px;
+        cursor: pointer;
+        color: #fff;
+        outline: none;
+        transition: background 0.3s;
+      }
+      .mute-button:hover {
+        background: rgba(255, 255, 255, 0.5);
+      }
+    /* Bouncing stickers */
+    .bounce {
+      animation: bounce 3s ease-in-out infinite;
+    }
+    @keyframes bounce {
+      0%, 100% {
+        transform: translateY(0);
+      }
+      50% {
+        transform: translateY(-15px);
+      }
+    }
+
+    /* BEAR SVG */
+    svg {
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, -50%);
+      height: 100vh;
+      width: auto;
+      z-index: 2; /* behind the banner/text, but above stickers background */
+      cursor: pointer; /* So we can 'touch' the bear */
+    }
+    :root {
+      --color-1: #42392D; /* stroke */
+      --color-2: #C3A784; /* fur */
+      --color-3: #FFE6C7; /* belly */
+      --color-4: #FFFFFF; /* light */
+      --color-5: #F7C2BC; /* blush */
+      --color-6: #587582; /* shadow */
+      --color-7: #84AEC2; /* background */
+      --color-8: #F3FCCC; /* sparkles */
+      --color-9: #F7C2BC; /* sparkles 2 */
+    }
+
+    /* INSTRUCTIONS */
+    #instructions {
+      position: absolute;
+      left: 50%;
+      transform: translateX(-50%);
+      bottom: 8%;
+      font-size: 20px;
+      color: #fff;
+      text-align: center;
+      font-family: 'Poppins', sans-serif;
+      text-shadow: 0 0 3px #000;
+      opacity: 0; /* Fade in later */
+      z-index: 10;
+    }
+
+    /* TOUCH PROMPTS */
+    #touch-prompts {
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 15;
+      pointer-events: none;
+    }
+    .touch-here {
+      position: absolute;
+      font-size: 18px;
+      background: rgba(255,255,255,0.2);
+      color: #fff;
+      border: 2px solid #fff;
+      border-radius: 6px;
+      padding: 8px;
+      cursor: pointer;
+      pointer-events: auto; /* so we can click it */
+      font-family: 'Poppins', sans-serif;
+      animation: promptBounce 2s infinite;
+    }
+    @keyframes promptBounce {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-10px); }
+    }
+
+    /* GIF CARD / MESSAGE */
+    #gif-card {
+      position: absolute;
+      top: 40%;
+      left: 20%;
+      transform: translateX(-50%);
+      background: rgb(238, 175, 244);
+      border: 2px solid #c72eb0;
+      border-radius: 10px;
+      padding: 20px;
+      max-width: 300px;
+      text-align: center;
+      font-family: 'Great Vibes', cursive;
+      color: #000000ed;
+      font-size: 22px;
+      display: none;
+      z-index: 20;
+    }
+
+    /* FINAL INSTRUCTION */
+    #final-instruction {
+      position: absolute;
+      top: 75%;
+      left: 50%;
+      transform: translateX(-50%);
+      font-family: 'Poppins', sans-serif;
+      font-size: 22px;
+      font-weight: 700;
+      color: white;
+      text-shadow: 0 0 5px #fff;
+      text-align: center;
+      display: none;
+      z-index: 20;
+    }
+
+    /* FINAL SURPRISE */
+    #final-surprise {
+      position: absolute;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: rgba(0,0,0,0.7);
+      display: none;
+      z-index: 30;
+    }
+    /* Falling hearts effect inside final surprise */
+    .heart {
+      position: absolute;
+      color: #ff79c6;
+      font-size: 36px;
+      opacity: 0.8;
+      animation: fall linear forwards;
+    }
+    @keyframes fall {
+      0% {
+        transform: translateY(-50px);
+        opacity: 1;
+      }
+      100% {
+        transform: translateY(110vh) rotate(180deg);
+        opacity: 0;
+      }
+    }
+    /* Final message container */
+    #final-message {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 80%;
+      max-width: 600px;
+      font-family: 'Great Vibes', cursive;
+      font-size: 28px;
+      color: #fff;
+      text-shadow: 0 0 8px #ff9cb9;
+      text-align: center;
+      line-height: 1.5;
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- BUBBLE BACKGROUND CANVAS -->
+  <canvas id="sodaAnimation"></canvas>
+
+  <!-- BANNER -->
+  <div id="banner">Happy Hug Day</div>
+
+  <!-- TYPEWRITER TEXT -->
+  <div id="typewriter-box">
+    <div id="typewriter"></div>
+  </div>
+    <!-- MUSIC PLAYER -->
+    <div class="music-player">
+        <!-- Note: We removed autoplay so that we can trigger play on user interaction -->
+        <audio id="backgroundAudio" loop muted>
+          <source src="music/hugsong.mp3" type="audio/mpeg">
+          Your browser does not support the audio element.
+        </audio>
+        <button id="muteButton" class="mute-button">🔇</button>
+      </div>
+
+  <!-- RANDOM STICKERS CONTAINER -->
+  <div id="stickers-container"></div>
+
+  <!-- BEAR SVG -->
+  <svg id="bearymcbearface" viewBox="99 -26 239 540" aria-labelledby="uniqueTitleID uniqueDescID" role="img">
+    <title id="uniqueTitleID">Beary McBearFace</title>
+    <desc id="uniqueDescID">A bear animation</desc>
+    <g class="shadow" opacity="0">
+      <ellipse cx="215" cy="435.834" fill="var(--color-6)" stroke="var(--color-1)" stroke-width="0" rx="100" ry="13"/>
+    </g>
+    <g class="sparkles" opacity="0">
+      <g class="sparkle sparkle-1">
+        <path fill="var(--color-8)" d="M298.274 412.387c-1.216 1.131-5.133-2.393-6.793-2.453-1.66-.059-5.818 3.177-6.95 1.962-1.131-1.216 2.393-5.133 2.453-6.793.059-1.66-3.178-5.818-1.962-6.95 1.216-1.131 5.133 2.394 6.792 2.453 1.66.06 5.819-3.177 6.95-1.962 1.132 1.216-2.393 5.133-2.452 6.793-.06 1.66 3.177 5.818 1.962 6.95z"
+              transform="rotate(-128.255 291.648 405.27)"/>
+      </g>
+      <g class="sparkle sparkle-2">
+        <path fill="var(--color-8)" d="M152.921 419.224c-1.394 1.298-5.886-2.745-7.79-2.813-1.904-.068-6.673 3.644-7.972 2.25-1.298-1.395 2.745-5.887 2.813-7.79.068-1.905-3.644-6.674-2.25-7.972 1.395-1.298 5.887 2.744 7.79 2.812 1.905.068 6.674-3.644 7.972-2.25 1.298 1.395-2.744 5.887-2.812 7.791-.068 1.904 3.644 6.673 2.25 7.972z"
+              transform="rotate(38.28 145.322 411.061)"/>
+      </g>
+      <g class="sparkle sparkle-3">
+        <path fill="var(--color-9)" d="M313.091 424.893c-.828.772-3.498-1.63-4.63-1.671-1.13-.04-3.965 2.165-4.736 1.337-.771-.829 1.631-3.498 1.671-4.63.04-1.131-2.165-3.965-1.336-4.737.828-.77 3.498 1.631 4.629 1.672 1.131.04 3.965-2.166 4.737-1.337.771.829-1.631 3.498-1.672 4.63-.04 1.13 2.166 3.965 1.337 4.736z"
+              transform="rotate(28.071 308.575 420.043)"/>
+      </g>
+    </g>
+    <g class="bear" transform="translate(0 -700)">
+      <g class="legs">
+        <g class="leg-right">
+          <path fill="var(--color-2)" stroke="var(--color-1)" stroke-width="3"
+                d="M231.99 398.244s1.706 16.416 2.133 20.575c.427 4.159 2.433 9.572 5.835 12.798 3.568 3.385 5.96 5.475 13.728 5.404 7.471-.069 16.487-3.72 19.474-5.69 2.987-1.97 6.405-8.134 4.912-14.482-1.493-6.348-8.747-33.489-8.747-33.489l-1.707-5.91-35.842 15.103z"/>
+        </g>
+        <g class="leg-left">
+          <path fill="var(--color-2)" stroke="var(--color-1)" stroke-width="3"
+                d="M168.394 389.249s-1.64 18.97-2.577 23.655c-.937 4.684-3.747 13.115-1.64 18.268 2.109 5.152 8.198 8.665 16.63 9.134 8.43.468 17.897 1.542 23.186-3.045 4.254-3.689 5.386-15.457 5.152-19.205-.234-3.747-2.576-27.636-2.576-27.636z"/>
+        </g>
+      </g>
+      <g class="arm-right">
+        <path fill="var(--color-2)" stroke="var(--color-1)" stroke-width="3"
+              d="M269.585 272.816c.317-1.437 13.178 7.592 23.158 24.577 1.667 2.836 12.853 24.956 16.598 35.629 2.51 7.15 5.804 19.926.133 27.904-4.278 6.017-20.76 8.487-27.728 3.672-7.622-5.267-13.101-35.894-14.896-40.266-4.287-10.442-9.081-30.72-9.081-32.61 0-1.891-2.363-8.508-2.363-8.508z"/>
+      </g>
+      <g class="body">
+        <g class="body-back" display="inline">
+          <path fill="var(--color-2)" stroke="var(--color-1)" stroke-width="3"
+                d="M146.152 360.836c1.395 21.18 8.436 31.716 21.97 38.125 26.977 12.775 63.433 7.63 84.18 2.385 20.747-5.247 36.962-22.894 35.532-43.879-1.431-20.985-5.008-32.432-15.5-54.61-10.494-22.177-36.487-24.562-50.557-25.755-13.814-1.17-51.748-4.053-63.194 21.463-11.447 25.516-13.826 41.09-12.43 62.27z"/>
+        </g>
+        <g class="belly" display="inline">
+          <path fill="var(--color-3)" stroke="var(--color-1)" stroke-width="0"
+                d="M216.758 329.43c-7.169 1.802-15.29 3.487-19.583 11.803-4.292 8.317-6.367 17.941-5.902 26.827.43 8.196 4.56 17.169 15.023 20.656 10.462 3.488 32.194-2.47 37.557-8.048 6.707-6.975 6.464-18.815 5.365-28.168-1.165-9.915-5.633-19.315-10.999-21.997-5.365-2.683-14.291-2.875-21.46-1.073z"/>
+        </g>
+        <g class="bellybutton" fill="none" stroke="var(--color-1)" stroke-linecap="round" stroke-width="1.5">
+          <path d="M223.615 358.96l3.727-5.295"/>
+          <path d="M222.634 354.057l5.296 4.12"/>
+        </g>
+      </g>
+      <g class="arm-left">
+        <path fill="var(--color-2)" stroke="var(--color-1)" stroke-width="3"
+              d="M158.323 284.09s-11.636 9.718-19.983 24.259c-5.935 10.337-10.903 29.366-11.254 32.173-.576 4.61-4.515 18.26-1.566 23.878 4.386 8.352 16.62 11.683 21.795 12.202 7.735.776 14.708-2.32 17.16-10.357 1.784-5.842 5.323-27.128 6.04-34.413 1.523-15.47 3.757-33.662 6.31-34.391l-3.982-11.71-9.602-7.261z"/>
+      </g>
+      <g class="ears">
+        <g class="ear-right">
+          <g class="ear-back">
+            <path fill="var(--color-2)" stroke="var(--color-1)" stroke-linecap="round" stroke-width="3"
+                  d="M231.91 181.111s1.43-12.162 12.639-21.7c11.208-9.54 21.033-9.452 30.286-6.44 10.254 3.34 16.216 10.493 18.362 22.894 2.776 16.04-10.016 29.332-12.877 32.67-2.862 3.339-10.97 8.585-10.97 8.585z"/>
+          </g>
+          <g class="ear-front">
+            <path fill="var(--color-5)" stroke="none"
+                  d="M250.466 175.906s-.35-5.534 3.071-7.848c5.801-3.924 12.696-5.799 19.621-1.365 5.381 3.445 8.889 9.332 8.02 15.867-2.267 17.033-9.044 13.48-10.58 13.48-1.535 0-20.132-20.134-20.132-20.134z"/>
+          </g>
+        </g>
+        <g class="ear-left">
+          <g class="ear-back">
+            <path fill="var(--color-2)" stroke="var(--color-1)" stroke-linecap="round" stroke-width="3"
+                  d="M191.567 175.641s-3.1-11.208-14.07-17.17c-10.97-5.961-25.278-5.007-33.863.239-5.1 3.116-11.923 9.777-14.07 17.647-2.146 7.87-1.192 17.17 2.147 23.131 3.338 5.962 13.354 15.262 19.793 17.886 6.438 2.623 40.063-41.733 40.063-41.733z"/>
+          </g>
+          <g class="ear-front">
+            <path fill="var(--color-5)" stroke="none"
+                  d="M159.021 203.275s-11.709-2.482-15.427-9.28c-3.842-7.02-2.469-16.178 4.886-22.037 6.542-5.211 17.73-4.116 22.95.818 5.173 4.89 6.756 14.02 6.756 14.02z"/>
+          </g>
+        </g>
+      </g>
+      <g class="head">
+        <path fill="var(--color-2)" stroke="var(--color-1)" stroke-linecap="round" stroke-linejoin="round" stroke-width="3"
+              d="M222.1 161.712s-31.8-2.175-52.31 16.187c-20.98 18.784-30.285 41.255-31.954 56.04-1.67 14.786 4.334 38.643 13.746 49.897 10.255 12.26 28.225 26.652 68.288 22.36 40.063-4.293 59.393-25.18 64.864-38.394 4.676-11.295 7.87-25.755 5.246-45.31-2.623-19.554-16.605-36.706-30.286-47.216-16.77-12.884-37.593-13.564-37.593-13.564z"/>
+      </g>
+      <defs>
+        <clipPath id="head-clip" clipPathUnits="userSpaceOnUse">
+          <path d="M222.1 161.712s-31.8-2.175-52.31 16.187c-20.98 18.784-30.285 41.255-31.954 56.04-1.67 14.786 4.334 38.643 13.746 49.897 10.255 12.26 28.225 26.652 68.288 22.36 40.063-4.293 59.393-25.18 64.864-38.394 4.676-11.295 7.87-25.755 5.246-45.31-2.623-19.554-16.605-36.706-30.286-47.216-16.77-12.884-37.593-13.564-37.593-13.564z"/>
+        </clipPath>
+      </defs>
+      <g class="face" clip-path="url(#head-clip)">
+        <g class="cheeks">
+          <ellipse cx="164.477" cy="236.834" fill="var(--color-5)" rx="15.798" ry="10.778"/>
+          <ellipse cx="267.487" cy="229.337" fill="var(--color-5)" rx="15.798" ry="10.778"/>
+        </g>
+        <g class="eyes">
+          <g class="eye-right">
+            <circle class="eye-back" cx="252.063" cy="206.992" r="10.993" fill="var(--color-1)" stroke="var(--color-4)" stroke-width="2"/>
+            <circle class="eye-light" cx="249.98" cy="204.089" r="5.988" fill="var(--color-4)" />
+            <circle class="eye-light-2" cx="256.519" cy="211.821" r="3.095" fill="var(--color-4)"/>
+          </g>
+          <g class="eye-left">
+            <circle class="eye-back" cx="177.258" cy="212.643" r="10.993" fill="var(--color-1)" stroke="var(--color-4)" stroke-width="2"/>
+            <circle class="eye-light" cx="175.175" cy="209.741" r="5.988" fill="var(--color-4)"/>
+            <circle class="eye-light-2" cx="181.714" cy="217.472" r="3.095" fill="var(--color-4)"/>
+          </g>
+        </g>
+        <g class="snout">
+          <path fill="var(--color-3)" stroke="var(--color-1)" stroke-width="0"
+                d="M215.816 203.177s-14.309-1.67-20.986 7.87c-6.677 9.538-11.446 25.264-12.639 34.1-.688 5.102-1.725 12.08 5.247 20.986 5.517 7.049 12.782 10.024 25.754 9.3 16.956-.946 26.85-5.92 26.85-5.92s10.908-4.708 11.573-18.545c.69-14.354-10.998-33.96-13.145-36.822-2.146-2.861-8.346-11.208-22.654-10.97z"/>
+        </g>
+        <g class="snout-front">
+          <g class="smile">
+            <path fill="none" stroke="var(--color-1)" stroke-linecap="round" stroke-width="3"
+                  d="M212.126 237.46s2.628 2.077 4.705 2.077 4.399-2.627 4.399-2.627-.306-2.81-.306-3.422c0-.61.306 3.422.306 3.422s1.588 1.833 4.277 2.016c2.688.183 4.46-2.322 4.46-2.322"/>
+          </g>
+          <g class="nose">
+            <path fill="var(--color-1)" d="M220.342 218.404s1.734-4.488 5.509-4.794c3.774-.306 5.818 2.865 6.018 4.998.306 3.264-1.224 6.019-3.468 8.671-2.616 3.091-6.019 5.305-6.019 5.305s-1.428 1.428-3.366.306c-1.938-1.123-7.596-4.694-9.18-6.937-1.226-1.734-2.545-3.161-2.041-6.533.227-3.676 4.673-7.56 8.365-5.912 3.57 1.53 4.182 4.896 4.182 4.896z"/>
+            <circle cx="214.033" cy="215.388" r="1.5" fill="var(--color-4)" />
+          </g>
+        </g>
+      </g>
+    </g>
+  </svg>
+
+  <!-- INSTRUCTIONS BELOW BEAR -->
+  <div id="instructions">Touch the bear to unlock surprises!</div>
+
+  <!-- TOUCH PROMPTS (appear on bear) -->
+  <div id="touch-prompts"></div>
+
+  <!-- GIF CARD / MESSAGE DISPLAY -->
+  <div id="gif-card"></div>
+
+  <!-- FINAL INSTRUCTION -->
+  <div id="final-instruction"></div>
+
+  <!-- FINAL SURPRISE SCREEN -->
+  <div id="final-surprise">
+    <div id="final-message"></div>
+  </div>
+
+  <!-- GSAP Library -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.11.4/gsap.min.js"></script>
+
+  <!-- BUBBLE BACKGROUND SCRIPT -->
+  <script>
+    const canvas = document.getElementById('sodaAnimation');
+    const ctx = canvas.getContext('2d');
+
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+
+    const bubblesArray = [];
+    const numberOfBubbles = 200;
+
+    class Bubble {
+      constructor() {
+          this.x = Math.random() * canvas.width;
+          this.y = canvas.height + Math.random() * 100;
+          this.size = Math.random() * 5 + 2;
+          this.speedY = Math.random() * 3 + 1;
+          this.opacity = Math.random() * 0.5 + 0.2;
+          this.color = `rgba(255, 255, 255, ${this.opacity})`;
+          this.shadowBlur = Math.random() * 50;
+      }
+      update() {
+          this.y -= this.speedY;
+          if (this.y < -this.size) {
+              this.y = canvas.height + this.size;
+              this.x = Math.random() * canvas.width;
+              this.speedY = Math.random() * 3 + 1;
+              this.size = Math.random() * 5 + 2;
+              this.opacity = Math.random() * 0.5 + 0.2;
+              this.color = `rgba(255, 255, 255, ${this.opacity})`;
+          }
+      }
+      draw() {
+          ctx.beginPath();
+          ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+          ctx.shadowColor = this.color;
+          ctx.shadowBlur = this.shadowBlur;
+          ctx.fillStyle = this.color;
+          ctx.fill();
+          ctx.shadowColor = 'transparent';
+          ctx.shadowBlur = 0;
+      }
+    }
+
+    function initBubbles() {
+      for (let i = 0; i < numberOfBubbles; i++) {
+          bubblesArray.push(new Bubble());
+      }
+    }
+    function handleBubbles() {
+      bubblesArray.forEach((bubble) => {
+          bubble.update();
+          bubble.draw();
+      });
+    }
+    function animateBubbles() {
+      ctx.fillStyle = 'rgba(13, 17, 23, 0.8)';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      handleBubbles();
+      requestAnimationFrame(animateBubbles);
+    }
+    window.addEventListener('resize', () => {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    });
+    initBubbles();
+    animateBubbles();
+  </script>
+
+  <!-- BEAR ANIMATION & INTERACTIONS -->
+  <script>
+    // -----------
+    // GSAP Bear Animation
+    // -----------
+    const fallingDuration = 1.3;
+    const blinkDuration = 0.25;
+    const squishingDuration = 0.4;
+    const unsquishingDuration = 0.5;
+    const sparkleDuration = 0.35;
+    const isAnimationOk = window.matchMedia('(prefers-reduced-motion: no-preference)').matches;
+
+    const dom = {
+      armLeft: document.querySelectorAll(".arm-left"),
+      armRight: document.querySelectorAll(".arm-right"),
+      bear: document.querySelector(".bear"),
+      belly: document.querySelectorAll(".belly"),
+      bellybutton: document.querySelectorAll(".bellybutton"),
+      body: document.querySelectorAll(".body"),
+      bodyBack: document.querySelectorAll(".body-back"),
+      ears: document.querySelectorAll(".ears"),
+      eyeLights: document.querySelectorAll(".eye-light, .eye-light-2"),
+      eyes: document.querySelectorAll(".eyes"),
+      face: document.querySelector(".face"),
+      head: document.querySelector(".head"),
+      headClip: document.querySelector("#head-clip"),
+      legLeft: document.querySelectorAll(".leg-left"),
+      legRight: document.querySelectorAll(".leg-right"),
+      shadow: document.querySelectorAll(".shadow"),
+      sparkleGroup: document.querySelectorAll(".sparkles"),
+      sparkles: document.querySelectorAll(".sparkle"),
+      nose: document.querySelectorAll(".nose"),
+      cheeks: document.querySelectorAll(".cheeks"),
+      snout: document.querySelectorAll(".snout"),
+      snoutFront: document.querySelectorAll(".snout-front"),
+      smile: document.querySelectorAll(".smile"),
+    };
+
+    let screenSize = {
+      width: window.innerWidth,
+      height: window.innerHeight
+    };
+    let mouse = {
+      x: window.innerWidth / 2,
+      y: window.innerHeight / 2
+    };
+    let mouseStored = { ...mouse };
+
+    function getFallingTl() {
+      const tl = gsap.timeline({defaults: {duration: fallingDuration, ease: "power2.in"}});
+      tl.from(dom.bear, {y: -700});
+      tl.from([dom.armLeft, dom.legLeft], {rotation: 50}, "<");
+      tl.from([dom.armRight, dom.legRight], {rotation: -40}, "<");
+      tl.from(dom.face, {y: -50}, "<");
+      tl.from(dom.ears, {y: 100}, "<");
+      tl.from([dom.belly, dom.bellybutton], {y: -40}, "<");
+      tl.from(dom.shadow, {scale: 0}, "<");
+      // Blink at end
+      tl.to(dom.eyes, {scaleY: 0.1, duration: blinkDuration, ease: "power4.in"}, `>-${blinkDuration}`);
+      tl.to(dom.eyeLights, {scale: 0, duration: blinkDuration, ease: "power4.in"}, "<");
+      return tl;
+    }
+
+    function getSquishingTl() {
+      const tl = gsap.timeline({defaults: {duration: squishingDuration, ease: "power1.out"}});
+      tl.to([dom.head, dom.body], {y: 20});
+      tl.to(dom.bodyBack, {scaleX: 1.07}, "<");
+      tl.to(dom.belly, {scaleY: 1.05, scaleX: 1.1}, "<");
+      tl.to(dom.shadow, {scale: 1.1}, "<");
+      tl.to(dom.face, {y: 35, x: 5}, "<");
+      tl.to(dom.ears, {y: 25}, "<");
+      tl.to(dom.armLeft, {rotation: -7, y: 10}, "<");
+      tl.to(dom.armRight, {rotation: 7, y: 10}, "<");
+      return tl;
+    }
+
+    function getUnsquishingTl() {
+      const tl = gsap.timeline({defaults: {duration: unsquishingDuration, ease: "power1.inOut"}});
+      tl.to(dom.head, {y: 0});
+      tl.to(dom.body, {y: 0}, "<");
+      tl.to(dom.bodyBack, {scaleX: 1}, "<");
+      tl.to(dom.belly, {scaleY: 1, scaleX: 1}, "<");
+      tl.to(dom.shadow, {scale: 1}, "<");
+      tl.to(dom.face, {y: 0, x: 0}, "<");
+      tl.to(dom.ears, {y: 0}, "<");
+      tl.to(dom.armLeft, {rotation: 0, y: 0}, "<");
+      tl.to(dom.armRight, {rotation: 0, y: 0}, "<");
+      tl.to(dom.eyes, {scaleY: 1}, "<");
+      tl.to(dom.eyeLights, {scale: 1}, "<");
+      return tl;
+    }
+
+    function getSparklingTl() {
+      const tl = gsap.timeline({defaults: {duration: sparkleDuration, ease: "power1.out"}});
+      // Random sparkle keyframe
+      tl.to(dom.sparkles[1], {
+        keyframes: [
+          {opacity: 1, duration: sparkleDuration / 5},
+          {
+            x: "random(-5, -20)",
+            y: "random(-5, -10)",
+            rotation: "random(-90, -270)",
+            scale: 0.9,
+            opacity: 1,
+            duration: 2 * sparkleDuration / 5
+          },
+          {opacity: 0, duration: 2 * sparkleDuration / 5}
+        ]
+      });
+      tl.to([dom.sparkles[0], dom.sparkles[2]], {
+        keyframes: [
+          {opacity: 1, duration: sparkleDuration / 5},
+          {
+            x: "random(15, 5)",
+            y: "random(-5, -20)",
+            rotation: "random(-90, -270)",
+            scale: 0.9,
+            opacity: 1,
+            duration: 2 * sparkleDuration / 5
+          },
+          {opacity: 0, duration: 2 * sparkleDuration / 5}
+        ],
+      }, "<");
+      return tl;
+    }
+
+    function getPercentage(partial, total) {
+      return (partial * 100) / total;
+    }
+
+    function setAnimations() {
+      gsap.set([dom.bear], {y: 0});
+      gsap.set([dom.body, dom.bodyBack], {transformOrigin: "50% 70%"});
+      gsap.set([dom.belly], {transformOrigin: "50% 80%"});
+      gsap.set([dom.armLeft, dom.legLeft], {transformOrigin: "100% 0%"});
+      gsap.set([dom.shadow, dom.face, dom.ears, dom.eyes, dom.eyeLights], {transformOrigin: "50% 50%"});
+      gsap.set([dom.sparkles], {transformOrigin: "center", opacity: 0, scale: 0.5});
+      gsap.set([dom.shadow, dom.sparkleGroup], {opacity: 1});
+
+      const master = gsap.timeline({onComplete: setMouseEvents});
+      master.add(getFallingTl());
+      master.add(getSparklingTl());
+      master.add(getSquishingTl(), "<");
+      master.add(getUnsquishingTl());
+    }
+
+    function setMouseEvents() {
+      window.addEventListener("mousemove", setMouseCoords);
+      gsap.ticker.add(moveBearFace);
+    }
+
+    function setMouseCoords(e) {
+      mouse.x = e.clientX;
+      mouse.y = e.clientY;
+    }
+
+    function moveBearFace() {
+      if (mouseStored.x === mouse.x && mouseStored.y === mouse.y) return;
+      let xPercent = getPercentage(mouse.x, screenSize.width) - 50;
+      let yPercent = getPercentage(mouse.y, screenSize.height) - 50;
+
+      gsap.to([dom.head, dom.headClip], {yPercent: yPercent * 0.03, xPercent: xPercent * 0.025});
+      gsap.to([dom.eyes, dom.eyeLights, dom.cheeks], {yPercent: yPercent * 0.4, xPercent: xPercent * 0.1});
+      gsap.to(dom.snout, {yPercent: yPercent * 0.3, xPercent: xPercent * 0.4});
+      gsap.to(dom.snoutFront, {yPercent: yPercent * 1.5, xPercent: xPercent * 1.5});
+      gsap.to(dom.ears, {yPercent: yPercent * -0.09, xPercent: xPercent * -0.025});
+      gsap.to(dom.armRight, {yPercent: yPercent * -0.05, xPercent: xPercent * -0.075});
+      gsap.to(dom.armLeft, {yPercent: yPercent * -0.08, xPercent: xPercent * 0.075});
+      gsap.to(dom.belly, {yPercent: yPercent * 0.08, xPercent: xPercent * 0.075});
+      gsap.to(dom.bellybutton, {yPercent: 2 * yPercent, xPercent: 2 * xPercent});
+
+      mouseStored.x = mouse.x;
+      mouseStored.y = mouse.y;
+    }
+
+    // -----------
+    // Start Bear animations (on load)
+    // -----------
+    if (isAnimationOk) {
+      setAnimations();
+    }
+
+    // -----------
+    // Banner & Typewriter Logic
+    // -----------
+    window.addEventListener('load', () => {
+      // 1) Banner floats in
+      gsap.to("#banner", {
+        y: 80,
+        duration: 1.2,
+        ease: "power2.out",
+        onComplete: startTypewriter
+      });
+    });
+
+    const typewriterText = "Welcome to the Hug Journey! Today is all about warmth and love. Ready for some hugs?";
+    let typeIdx = 0;
+
+    function startTypewriter() {
+        const typewriterBox = document.getElementById('typewriter-box');
+        const twElem = document.getElementById('typewriter');
+      
+        typewriterBox.style.display = 'block'; // Make sure the box is visible first
+        twElem.textContent = ""; // Reset text before starting animation
+      
+        const typingInterval = setInterval(() => {
+          twElem.textContent += typewriterText[typeIdx];
+          typeIdx++;
+          if (typeIdx === typewriterText.length) {
+            clearInterval(typingInterval);
+            spawnStickers();
+          }
+        }, 50);
+      }
+      
+
+    // -----------
+    // Stickers (Hearts, Stars, Teddies, Balloons)
+    // -----------
+    const stickerEmojis = [
+      { char: '💖', effect: 'glow' },
+      { char: '🌙', effect: 'glow' },
+      { char: '🧸', effect: 'bounce' },
+      { char: '🎈', effect: 'bounce' },
+    ];
+
+    function spawnStickers() {
+        const container = document.getElementById('stickers-container');
+        const screenWidth = window.innerWidth;
+        const screenHeight = window.innerHeight;
+      
+        // Define fixed positions (corners + edges)
+        const positions = [
+          { left: "5%", top: "5%" }, // Top-left
+          { left: "95%", top: "5%" }, // Top-right
+          { left: "5%", top: "95%" }, // Bottom-left
+          { left: "95%", top: "95%" }, // Bottom-right
+          { left: "50%", top: "5%" }, // Top center
+          { left: "5%", top: "50%" }, // Left center
+          { left: "95%", top: "50%" }, // Right center
+          { left: "50%", top: "95%" }  // Bottom center
+        ];
+      
+        // Spawn stickers at specified positions
+        for (let i = 0; i < positions.length; i++) {
+          const item = stickerEmojis[i % stickerEmojis.length]; // Cycle through sticker types
+          const el = document.createElement('div');
+          el.classList.add('sticker', item.effect);
+          el.textContent = item.char;
+          el.style.left = positions[i].left;
+          el.style.top = positions[i].top;
+          container.appendChild(el);
+        }
+      
+      
+      // Fade in instructions (Bear already dropped in from GSAP)
+      gsap.to("#instructions", {opacity: 1, duration: 1.2, delay: 0.5});
+    }
+
+    // -----------
+    // Touching the Bear (5 touches => 5 messages) => Final Instruction => 10 more touches => Final Surprise
+    // -----------
+    const messages = [
+      "Every time you close your eyes and think of me, imagine my arms wrapping around you in the tightest hug. No matter how far, my love reaches you in every heartbeat, in every whisper of the wind. This hug is yours, forever. 🤗",
+      "One day, these virtual hugs will no longer be on a screen. One day, I’ll be there, standing in front of you, arms open wide, waiting to hold you for real. Until then, every touch here is a promise—of the warmth and love that’s only yours. 💞",
+      "You are the warmest part of my heart, my safe place, my happiest thought. If my arms could stretch across the distance, they’d reach you in a second. So close your eyes, feel this hug, and know that I’m always with you. 💖",
+      "I can already imagine the moment I finally hold you for real—the way my heart will race, the way I’ll never want to let go. Until then, I send you all my warmth, all my love, and a million invisible hugs. One day soon, my love. 🐼",
+       "Every hug I send you through this screen carries a thousand emotions—love, longing, warmth, and a silent promise that one day, I will hold you for real. This is my love wrapped around you, and it will always, always belong to you. 🧸"
+    ];
+    let currentTouchIndex = 0;
+    let totalTouches = 0;
+    let finalPhase = false;
+
+    const gifCard = document.getElementById('gif-card');
+    const finalInstr = document.getElementById('final-instruction');
+    const promptsContainer = document.getElementById('touch-prompts');
+
+    // We’ll define random spots on the bear for each prompt
+    const promptPositions = [
+      { left: '50%', top: '40%' },
+      { left: '60%', top: '55%' },
+      { left: '45%', top: '65%' },
+      { left: '35%', top: '47%' },
+      { left: '55%', top: '35%' },
+    ];
+    // For 10 extra touches, we can just reuse or place them randomly.
+
+    // When the user clicks the bear, we place the first prompt (or next prompt)
+    document.querySelector('svg').addEventListener('click', showNextPrompt);
+
+    function showNextPrompt() {
+      // If we're in final phase, just track final touches
+      if (finalPhase) return trackFinalTouches();
+
+      // If we've not shown all 5 prompts yet:
+      if (currentTouchIndex < 5) {
+        createPrompt(currentTouchIndex);
+      }
+    }
+
+    function createPrompt(index) {
+      // Remove existing prompt if any
+      promptsContainer.innerHTML = "";
+
+      const prompt = document.createElement('div');
+      prompt.classList.add('touch-here');
+      prompt.style.left = promptPositions[index].left;
+      prompt.style.top = promptPositions[index].top;
+      prompt.textContent = "Touch Here";
+
+      prompt.addEventListener('click', () => {
+        // Reveal the message
+        revealMessage(messages[index]);
+        prompt.remove(); // remove the old prompt
+        currentTouchIndex++;
+        totalTouches++;
+
+        if (currentTouchIndex < 5) {
+          // Wait a bit, show next
+          setTimeout(() => showNextPrompt(), 5000);
+        } else {
+          // After 5 touches, show final instruction
+          setTimeout(() => {
+            // Hide any visible message
+            gifCard.style.display = 'none';
+            document.getElementById("instructions").style.opacity = 0;
+            finalInstr.textContent = "Touch the bear 10 more times for the final surprise!";
+            finalInstr.style.display = 'block';
+            finalPhase = true;
+          }, 12000);
+        }
+      });
+
+      promptsContainer.appendChild(prompt);
+    }
+
+    function revealMessage(msg) {
+      gifCard.style.display = 'block';
+      gifCard.textContent = "";
+      let idx = 0;
+      const interval = setInterval(() => {
+        gifCard.textContent += msg[idx];
+        idx++;
+        if (idx === msg.length) {
+          clearInterval(interval);
+        }
+      }, 40);
+      // Fade in scaling
+      gsap.fromTo(gifCard, {scale: 0.5, opacity: 0}, {scale: 1, opacity: 1, duration: 0.6});
+    }
+
+    let finalTouches = 0;
+
+    function trackFinalTouches() {
+      totalTouches++;
+      finalTouches++;
+      // Create some quick falling hearts effect each time
+      createFallingHeart();
+
+      if (finalTouches >= 10) {
+        // Final surprise
+        finalInstr.style.display = 'none';
+        showFinalSurprise();
+      }
+    }
+
+    // When the user clicks anywhere on the window, try to play the audio if it isn't already playing.
+  window.addEventListener('click', function() {
+    const audio = document.getElementById('backgroundAudio');
+    if (audio.paused) {
+      audio.play().then(() => {
+        console.log("Audio started playing.");
+      }).catch((error) => {
+        console.error("Error playing audio:", error);
+      });
+    }
+});
+
+// Mute toggle button event listener.
+  document.getElementById('muteButton').addEventListener('click', function(e){
+    e.stopPropagation();
+    const audio = document.getElementById('backgroundAudio');
+    audio.muted = !audio.muted;
+    this.textContent = audio.muted ? '🔇' : '🔊';
+});
+
+
+    // -----------
+    // Falling hearts on each final-phase touch
+    // -----------
+    function createFallingHeart() {
+      const finalSurp = document.getElementById('final-surprise');
+      const heart = document.createElement('div');
+      heart.classList.add('heart');
+      heart.textContent = "❤";
+      heart.style.left = (Math.random()*90) + "%";
+      heart.style.animationDuration = (Math.random()*2 + 3) + "s";
+      finalSurp.appendChild(heart);
+
+      setTimeout(() => heart.remove(), 5000);
+    }
+
+    // -----------
+    // Show final message
+    // -----------
+    function showFinalSurprise() {
+      const finalSurp = document.getElementById('final-surprise');
+      finalSurp.style.display = 'block';
+
+      // Fill screen with lots of hearts
+      for (let i = 0; i < 30; i++) {
+        createFallingHeart();
+      }
+
+      const messageElem = document.getElementById('final-message');
+      messageElem.textContent = "";
+      const finalMsg = `Cookie, every hug I send your way is filled with warmth and love. 
+I know we are far, but my arms will always be wrapped around you in spirit. 
+Every touch on this page was a touch of love, and soon, these hugs will be real. 
+I love you always, my Cookie.`;
+
+      let idx = 0;
+      const interval = setInterval(() => {
+        messageElem.textContent += finalMsg[idx];
+        idx++;
+        if (idx === finalMsg.length) {
+          clearInterval(interval);
+        }
+      }, 40);
+    }
+
+    // -----------
+    // Handle Window Resize for Bear Face
+    // -----------
+    window.addEventListener("resize", () => {
+      screenSize.width = window.innerWidth;
+      screenSize.height = window.innerHeight;
+    });
+  </script>
+</body>
+</html>
