@@ -1,0 +1,1302 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>For Cookie ❤️</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Parisienne&display=swap" rel="stylesheet">
+
+    <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,700;1,400;1,700&display=swap"
+        rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Merriweather:wght@300;400;700&display=swap" rel="stylesheet">
+
+
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Great+Vibes&family=Poppins:wght@300;400;600&display=swap');
+
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(to bottom, #1a0f1f, #2d1b33);
+            color: white;
+            overflow-x: hidden;
+        }
+
+        .section {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            padding: 2rem;
+        }
+
+        /*--------------------------------
+     * WELCOME SECTION
+     --------------------------------*/
+        #welcome {
+            background: radial-gradient(circle at center, rgba(255, 182, 193, 0.1) 0%, transparent 70%);
+        }
+
+        .welcome-text {
+            font-family: 'Great Vibes', cursive;
+            font-size: 2.5rem;
+            opacity: 0;
+            text-align: center;
+            text-shadow: 0 0 10px rgba(255, 182, 193, 0.5);
+        }
+
+        .scroll-indicator {
+            position: absolute;
+            bottom: 2rem;
+            left: 50%;
+            transform: translateX(-50%);
+            opacity: 0;
+            animation: bounce 2s infinite;
+        }
+
+        /*--------------------------------
+     * STACKED MEMORIES SECTION
+     --------------------------------*/
+        /* 
+       We have 5 memories, each 100vh tall, 
+       so the total container height = 5 * 100vh = 500vh.
+       That way, we have enough scroll space for each memory 
+       to slide up and replace the previous one.
+    */
+        #memories {
+            position: relative;
+            height: 500vh;
+            /* Adjust if you change number of memories */
+        }
+
+        .memory {
+            /* Each memory is sticky at the top (like a pinned slide) */
+            position: sticky;
+            top: 0;
+            width: 100%;
+            height: 100vh;
+            /* Full viewport */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+
+            /* Start off hidden (faded/translated), 
+         but we’ll fade it in with JS if desired */
+            opacity: 0;
+            transform: translateY(30px);
+            transition: all 1s ease;
+        }
+
+        /* Make each memory visible once it's time */
+        .memory.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* 
+       Higher z-index for the first memory in HTML, so it’s on top initially.
+       Then decrement for subsequent memories so they’re “underneath” initially 
+       but become the top slide once you scroll.
+    */
+        .memory:nth-child(1) {
+            z-index: 5;
+        }
+
+        .memory:nth-child(2) {
+            z-index: 4;
+        }
+
+        .memory:nth-child(3) {
+            z-index: 3;
+        }
+
+        .memory:nth-child(4) {
+            z-index: 2;
+        }
+
+        .memory:nth-child(5) {
+            z-index: 1;
+        }
+
+        /* Memory content: image + text side by side. 
+       We’ll alternate layout using .left-layout/.right-layout. */
+        .memory-inner {
+            display: flex;
+            align-items: center;
+            max-width: 1200px;
+            width: 100%;
+            gap: 2rem;
+        }
+
+        .memory-image {
+            flex: 1;
+            border-radius: 1rem;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        }
+
+        .memory-image img {
+            width: 100%;
+            height: 500px;
+            object-fit: cover;
+        }
+
+        .memory-text {
+            flex: 1;
+            background: rgba(255, 182, 193, 0.1);
+            border-radius: 1rem;
+            backdrop-filter: blur(10px);
+            padding: 2rem;
+            font-style: italic;
+            font-family: 'Merriweather', serif;
+            /* Apply EB Garamond */
+        }
+
+        .memory-date {
+            color: #ffb6c1;
+            font-size: 0.9rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .memory-title {
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+            font-weight: 600;
+        }
+
+        /* Alternate image/text side for visual interest. */
+        .left-layout .memory-inner {
+            flex-direction: row;
+        }
+
+        .right-layout .memory-inner {
+            flex-direction: row-reverse;
+        }
+
+        /********************************************
+  NIGHT SKY BACKGROUND & SECTION
+*********************************************/
+        .night-sky {
+            position: relative;
+            min-height: 70vh;
+            /* Use the gradient from your snippet */
+            background-image: linear-gradient(to top, #770c75, #090536);
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+            /* So it stays fixed when scrolling */
+            overflow: hidden;
+            /* Ensure child elements (moon, stars) don't overflow */
+        }
+
+        /********************************************
+        MOON
+    *********************************************/
+        .moon {
+            position: absolute;
+            top: 20%;
+            left: 2%;
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(222, 213, 228, 0.887) 4%, rgb(248, 246, 246) 100%);
+            box-shadow:
+                0 0 70px 10px #f5e4e4ab,
+                0 0 70px 20px #ca69b5dc,
+                0 0 70px 30px #e772e1dc;
+            animation: move 5s infinite;
+        }
+
+        @keyframes move {
+            50% {
+                box-shadow:
+                    0 0 70px 20px #f5e4e4dc,
+                    0 0 70px 40px #ca69b5dc,
+                    0 0 70px 40px #e772e1dc;
+            }
+        }
+
+        /********************************************
+        CRATERS ON THE MOON
+    *********************************************/
+        .crat {
+            position: absolute;
+            top: 80px;
+            left: 70px;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            box-shadow: inset 1px 4px 5px 1px rgb(185, 173, 185);
+            border: 4px solid rgb(216, 205, 219);
+        }
+
+        .crat2 {
+            top: 45px;
+            left: 40px;
+            width: 10px;
+            height: 10px;
+        }
+
+        .crat3 {
+            top: 25px;
+            left: 50px;
+            width: 20px;
+            height: 20px;
+        }
+
+        .crat4 {
+            top: 35px;
+            left: 100px;
+            width: 15px;
+            height: 15px;
+        }
+
+        .crat5 {
+            top: 120px;
+            left: 60px;
+            width: 10px;
+            height: 10px;
+        }
+
+        .crat6 {
+            top: 90px;
+            left: 20px;
+            width: 20px;
+            height: 20px;
+            box-shadow: inset 1px 7px 7px 1px rgb(204, 183, 204);
+        }
+
+        /********************************************
+        STARS
+    *********************************************/
+        .star {
+            position: absolute;
+            border-radius: 50%;
+            background-color: rgb(223, 189, 226);
+            box-shadow: 0 0 16px 2px rgb(233, 179, 215);
+            animation-duration: 3s;
+            animation-name: twinkle;
+            animation-iteration-count: infinite;
+        }
+
+        .star1 {
+            top: 200px;
+            left: 200px;
+            height: 5px;
+            width: 5px;
+            animation-delay: 3s;
+        }
+
+        .star2 {
+            top: 250px;
+            left: 250px;
+            height: 3px;
+            width: 3px;
+            animation-delay: 2s;
+        }
+
+        .star3 {
+            top: 100px;
+            left: 300px;
+            height: 2px;
+            width: 2px;
+        }
+
+        .star4 {
+            top: 50px;
+            left: 400px;
+            height: 1px;
+            width: 1px;
+            animation-delay: 1s;
+        }
+
+        @keyframes twinkle {
+            50% {
+                transform: scale(0.5);
+                opacity: 0.3;
+            }
+        }
+
+        /* Optional shooting star */
+        .shooting {
+            position: absolute;
+            top: 50px;
+            left: 1100px;
+            height: 10px;
+            width: 10px;
+            border-radius: 50%;
+            background-color: hsla(316, 28%, 92%, 0.993);
+            box-shadow: 1px -1px 1px 2px rgb(238, 8, 108);
+            animation: space 4s linear infinite;
+        }
+
+        @keyframes space {
+            0% {
+                top: 50px;
+                left: 1100px;
+                opacity: 1;
+            }
+
+            100% {
+                top: 150px;
+                left: 0;
+                opacity: 0;
+            }
+        }
+
+        /********************************************
+        CHALLENGE PARAGRAPHS (FADE-IN SEQUENCE)
+    *********************************************/
+        .challenge-text-container {
+            position: relative;
+            z-index: 2;
+            /* so text is above moon/stars */
+            max-width: 800px;
+            margin: 10% auto 0;
+            /* space it from the top */
+
+            padding: 1rem;
+            text-align: justify;
+        }
+
+        /* Each paragraph starts hidden */
+        .challenge-paragraph {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 1s ease;
+            margin-bottom: 1rem;
+            font-family: 'EB Garamond', serif;
+            font-size: 1.1rem;
+            line-height: 1.6;
+        }
+
+        /* When .visible is added via JS, it fades in */
+        .challenge-paragraph.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* Glowing box container */
+        .challenge-box {
+            position: relative;
+            z-index: 2;
+            /* Ensure it appears above the moon/stars */
+            max-width: 700px;
+            margin: 10% auto 0;
+            /* or adjust to your liking */
+            padding: 2rem;
+            font-family: 'EB Garamond', serif;
+            font-style: italic;
+            text-align: justify;
+
+            /* Glowing border */
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            border-radius: 10px;
+            box-shadow:
+                0 0 10px rgba(255, 255, 255, 0.2),
+                0 0 20px rgba(255, 255, 255, 0.2),
+                0 0 30px rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(10px);
+        }
+
+        /* Fade-in paragraphs */
+        .challenge-paragraph {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 1s ease;
+            margin-bottom: 1rem;
+            font-size: 1.1rem;
+            line-height: 1.6;
+        }
+
+        /* Class added via JS to fade them in sequentially */
+        .challenge-paragraph.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /*--------------------------------
+     * PROMISES SECTION
+     --------------------------------*/
+        /* Add these styles to your existing CSS */
+        #promises {
+            position: relative;
+            background: linear-gradient(25deg, #16054A, #210913);
+            overflow: hidden;
+            min-height: 50vh;
+            /* Reduced from 100vh to 50vh */
+            height: auto;
+            /* Allow content to determine height */
+            padding: 2rem 0;
+            /* Add some padding top and bottom */
+        }
+
+        .particles-canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+        }
+
+        .promises-carousel {
+            position: relative;
+            z-index: 2;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 300px;
+        }
+
+        .carousel-container {
+            width: 100%;
+            max-width: 1200px;
+            overflow: hidden;
+            padding: 1rem;
+        }
+
+        .carousel-track {
+            display: flex;
+            gap: 2rem;
+            animation: scroll 40s linear infinite;
+        }
+
+        .promise-box {
+            flex: 0 0 auto;
+            width: 350px;
+            padding: 1.5rem;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            font-family: 'Parisienne', cursive;
+            color: white;
+            text-align: center;
+            font-style: italic;
+
+            /* Glowing border effect */
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            box-shadow:
+                0 0 10px rgba(255, 255, 255, 0.2),
+                0 0 20px rgba(255, 255, 255, 0.1),
+                0 0 30px rgba(255, 255, 255, 0.1);
+        }
+
+        @keyframes scroll {
+            0% {
+                transform: translateX(0);
+            }
+
+            100% {
+                transform: translateX(-50%);
+            }
+        }
+
+        /* MUSIC PLAYER */
+    .music-player {
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        z-index: 100;
+      }
+      .mute-button {
+        background: rgba(255, 255, 255, 0.3);
+        border: none;
+        border-radius: 50%;
+        font-size: 24px;
+        padding: 8px 10px;
+        cursor: pointer;
+        color: #fff;
+        outline: none;
+        transition: background 0.3s;
+      }
+      .mute-button:hover {
+        background: rgba(255, 255, 255, 0.5);
+      }
+
+        /*--------------------------------
+     * FINAL SECTION
+     --------------------------------*/
+
+        /* Update the final section to match promises background */
+        #final {
+            background: linear-gradient(25deg, #16054A, #210913);
+            min-height: 100vh;
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        #final .text-center {
+            position: relative;
+            z-index: 10;
+            width: 90%;
+            max-width: 800px;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .click-instruction {
+            font-family: 'Great Vibes', cursive;
+            font-size: 2rem;
+            margin-bottom: 1.5rem;
+            z-index: 15;
+            position: relative;
+            opacity: 1;
+            text-shadow: 0 0 10px rgba(255, 182, 193, 0.5);
+            position: relative;
+        }
+
+        .final-heart {
+            font-size: 4rem;
+            cursor: pointer;
+            transition: transform 0.3s ease;
+            opacity: 1;
+            animation: heartbeat 1.5s infinite;
+            position: relative;
+            z-index: 15;
+            user-select: none;
+            display: inline-block;
+        }
+
+        @keyframes heartbeat {
+
+            0%,
+            100% {
+                transform: scale(1);
+            }
+
+            50% {
+                transform: scale(1.1);
+            }
+        }
+
+        .final-heart:hover {
+            transform: scale(1.2);
+        }
+
+        .final-message {
+            max-width: 800px;
+            margin: 2rem auto;
+            padding: 2rem;
+            font-family: 'EB Garamond', serif;
+            font-style: italic;
+            text-align: justify;
+            line-height: 1.8;
+            font-size: 1.2rem;
+            opacity: 0;
+            display: none;
+            position: relative;
+            /* Glowing box styles */
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            border-radius: 10px;
+            box-shadow:
+                0 0 10px rgba(255, 255, 255, 0.2),
+                0 0 20px rgba(255, 255, 255, 0.2),
+                0 0 30px rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(10px);
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        /* Make sure the particles canvas extends to both sections */
+        .particles-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 5;
+        }
+
+        /*--------------------------------
+     * ANIMATIONS & PARTICLES
+     --------------------------------*/
+        @keyframes bounce {
+
+            0%,
+            100% {
+                transform: translateY(0);
+            }
+
+            50% {
+                transform: translateY(-20px);
+            }
+        }
+
+        @keyframes flicker {
+            0% {
+                opacity: 0.8;
+                text-shadow: 0 0 15px #ffb6c1;
+            }
+
+            100% {
+                opacity: 1;
+                text-shadow: 0 0 30px #ffb6c1;
+            }
+        }
+
+        .particles {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        .particle {
+            position: absolute;
+            background: rgba(255, 182, 193, 0.5);
+            border-radius: 50%;
+            pointer-events: none;
+            opacity: 0;
+        }
+
+        /*--------------------------------
+     * MEDIA QUERIES
+     --------------------------------*/
+        @media (max-width: 768px) {
+            .welcome-text {
+                font-size: 2rem;
+            }
+
+            .challenge-text {
+                font-size: 1.2rem;
+            }
+
+            .memory-image img {
+                height: 300px;
+            }
+
+            .memory-inner {
+                flex-direction: column !important;
+            }
+
+            .memory {
+                padding: 1rem;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Floating Particles -->
+    <div class="particles"></div>
+
+    <!-- Welcome Section -->
+    <section id="welcome" class="section">
+        <div class="welcome-text"></div>
+        <div class="scroll-indicator">↓ Keep scrolling ↓</div>
+    </section>
+
+    <!-- MUSIC PLAYER -->
+    <div class="music-player">
+        <!-- Note: We removed autoplay so that we can trigger play on user interaction -->
+        <audio id="backgroundAudio" loop muted>
+            <source src="music/valentines.mp3" type="audio/mpeg">
+            Your browser does not support the audio element.
+        </audio>
+        <button id="muteButton" class="mute-button">🔇</button>
+    </div>
+
+    <!-- STACKED MEMORIES SECTION -->
+    <section id="memories">
+        <!-- Memory 1 (on TOP initially) -->
+        <div class="memory left-layout" id="memory1">
+            <div class="memory-inner">
+                <div class="memory-image">
+                    <img src="images/memory1.jpg" alt="Memory 1" />
+                </div>
+                <div class="memory-text">
+                    <div class="memory-date">First Picture of Us Together</div>
+                    <h2 class="memory-title">The moment we had our first picture</h2>
+                    <p>
+                        "The moment we had our first picture together, I felt something I had never felt
+                        before. Standing next to you wasn’t just exciting—it was surreal. I could feel
+                        my heart beating faster, my mind whispering, ‘Is this real?’ But there you were,
+                        right beside me, smiling. And in that moment, I knew... I didn’t just want a
+                        picture with you. I wanted a lifetime."
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Memory 2 (below Memory 1) -->
+        <div class="memory right-layout" id="memory2">
+            <div class="memory-inner">
+                <div class="memory-image">
+                    <img src="images/memory2.jpg" alt="Memory 2" />
+                </div>
+                <div class="memory-text">
+                    <div class="memory-date">Our First Long Distance Date</div>
+                    <h2 class="memory-title">Movie Night Together</h2>
+                    <p>
+                        "It wasn’t a theater, it wasn’t in person, but it was perfect. The way we set
+                        everything up, pressed play at the same time, and laughed together as if we
+                        were sitting side by side—it felt like you were right there. In those hours,
+                        distance didn’t exist. It was just you, me, and a movie that somehow became
+                        one of my favorites just because I watched it with you. And that night, I
+                        realized... even miles apart, you still felt like home."
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Memory 3 -->
+        <div class="memory left-layout" id="memory3">
+            <div class="memory-inner">
+                <div class="memory-image">
+                    <img src="images/memory3.jpg" alt="Memory 3" />
+                </div>
+                <div class="memory-text">
+                    <div class="memory-date">The Second Time We Met Each Other</div>
+                    <h2 class="memory-title">Deeper Than Magic</h2>
+                    <p>
+                        "The first time was magic, but the second time? It was deeper. It was real.
+                        That moment when I saw you again, something inside me whispered, ‘I belong here.’
+                        It wasn’t just about meeting—it was about feeling. I remember how my heart raced,
+                        how I didn’t want to blink, scared you might disappear. But you didn’t. You hugged
+                        me, you held me, and in that moment, I knew... I wanted to stay in your arms forever."
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Memory 4 -->
+        <div class="memory right-layout" id="memory4">
+            <div class="memory-inner">
+                <div class="memory-image">
+                    <img src="images/memory4.jpg" alt="Memory 4" />
+                </div>
+                <div class="memory-text">
+                    <div class="memory-date">My Favorite Picture of You (On the Beach)</div>
+                    <h2 class="memory-title">Wind & Ocean</h2>
+                    <p>
+                        "This picture is special. Maybe it’s because of the way the wind played with
+                        your hair, or how the ocean behind you made you look like the most beautiful
+                        thing I’ve ever seen. Or maybe, it’s because in that moment, all I could think
+                        was, ‘I want to see you like this every day.’ Every time I look at this picture,
+                        I smile. Because it reminds me that I love not just the way you look, but the
+                        way you make me feel—like the luckiest person in the world."
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Memory 5 -->
+        <div class="memory left-layout" id="memory5">
+            <div class="memory-inner">
+                <div class="memory-image">
+                    <img src="images/memory5.jpg" alt="Memory 5" />
+                </div>
+                <div class="memory-text">
+                    <div class="memory-date">Our 3-Hour Video Call After A Long Time</div>
+                    <h2 class="memory-title">Finally Seeing You</h2>
+                    <p>
+                        "After days of waiting, longing, and missing you more than words could ever
+                        say, finally... I saw you again. Even though it was through a screen, it was
+                        enough to remind me why I love you so much. The way we laughed, the way our eyes
+                        spoke without words, the way the world faded for those 3 hours—those moments
+                        were everything. And as the call ended, I realized... No matter how long we wait,
+                        no matter how far we are, the moment I see you again, it will always feel like
+                        coming home."
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Challenges Section -->
+    <section id="challenges" class="section night-sky">
+        <!-- Moon + Craters -->
+        <div class="moon">
+            <div class="crat crat1"></div>
+            <div class="crat crat2"></div>
+            <div class="crat crat3"></div>
+            <div class="crat crat4"></div>
+            <div class="crat crat5"></div>
+            <div class="crat crat6"></div>
+        </div>
+
+        <!-- Stars -->
+        <div class="star1 star"></div>
+        <div class="star2 star"></div>
+        <div class="star3 star"></div>
+        <div class="star4 star"></div>
+
+        <!-- Optional shooting star (if you want) -->
+        <!-- <div class="shooting"></div> -->
+
+        <!-- Challenge Text Container -->
+        <div class="challenge-text-container">
+            <div class="challenge-box">
+                <p class="challenge-paragraph">
+                    There are days when distance feels like the cruelest thing in the world. It tests
+                    us, making every second apart feel endless. The simplest things—things others take
+                    for granted—become dreams we keep chasing. A hug, waking up to your voice,
+                    holding your hand. And waiting for them is never easy.
+                </p>
+                <p class="challenge-paragraph">
+                    Every time I look at my phone, I wait for a message. Some nights, I fall
+                    asleep wondering what it would be like to have you beside me. Some
+                    mornings, I wake up wishing that today would be the day I open my eyes
+                    and find you right there, where you belong.
+                </p>
+                <p class="challenge-paragraph">
+                    But through it all, we hold on. Through the waiting, through the longing,
+                    because this is real. No distance, no challenge, no time apart could ever
+                    change what I feel for you. Some people measure love by time spent together.
+                    But I measure ours by the way we survive the time spent apart.
+                </p>
+                <p class="challenge-paragraph">
+                    And every day that we wait is another day closer to the moment we won’t have to
+                    wait anymore. That day will come, my love. And when it does, I will hold you, and
+                    I WILL NEVER LET YOU GO!
+                </p>
+
+            </div>
+    </section>
+
+
+    <!-- Promises Section -->
+    <section id="promises" class="section">
+        <canvas class="particles-canvas" id="particlesCanvas"></canvas>
+
+        <div class="promises-carousel">
+            <div class="carousel-container">
+                <div class="carousel-track">
+                    <!-- Promises will be duplicated by JS for infinite scroll -->
+                </div>
+            </div>
+        </div>
+    </section>
+
+
+    <!-- Updated Final Section -->
+    <section id="final" class="section">
+        <canvas class="particles-canvas"></canvas>
+        <div class="text-center">
+            <p class="click-instruction">One last thing Cookie, click this heart</p>
+            <div class="final-heart" id="finalHeart">❤️</div>
+            <div class="final-message" id="finalMessage">
+                My love, you are the first page and the last chapter of my story. The distance, the waiting, the
+                longing—it’s only a small part of something far greater. Because one day, it will no longer be texts and
+                calls, no longer be goodbyes and waiting. One day, I will wake up to your sleepy smile, hold you close
+                without a time limit, and whisper ‘I love you’ straight into your ears instead of a screen.
+
+                When that day comes, I won’t just hold you—I will pull you closer than ever, as if making up for every
+                second spent apart. And I will never let go. Every hug, every kiss, every moment will be real, wrapped
+                in the warmth of forever. Because that’s what you are to me—forever. My one, my only, my always.
+
+                <strong>Happy Valentine’s Day, my Cookie. Until forever begins. ❤️</strong>
+            </div>
+        </div>
+    </section>
+
+
+    <script>
+        // === TYPEWRITER EFFECT FOR WELCOME MESSAGE ===
+        const welcomeText = document.querySelector('.welcome-text');
+        const message = "Cookie, today is our day. Scroll down, and let me take you through something special.";
+        let charIndex = 0;
+        function typeWriter() {
+            if (charIndex < message.length) {
+                welcomeText.textContent += message.charAt(charIndex);
+                charIndex++;
+                setTimeout(typeWriter, 100);
+            } else {
+                welcomeText.style.opacity = 1;
+                document.querySelector('.scroll-indicator').style.opacity = 1;
+            }
+        }
+        setTimeout(() => {
+            welcomeText.style.opacity = 1;
+            typeWriter();
+        }, 1000);
+
+        // === SCROLL ANIMATIONS ===
+        // We check if each memory is in the "active zone"
+        // Then we fade it in (add .visible).
+        function isMemoryActive(memory, index) {
+            // We'll consider memory "active" if the scroll 
+            // is between index * window.innerHeight 
+            // and (index + 1) * window.innerHeight
+            const scrollY = window.scrollY;
+            const start = index * window.innerHeight;
+            const end = (index + 1) * window.innerHeight;
+            return (scrollY >= start && scrollY < end);
+        }
+
+        function handleScroll() {
+            // Fade in memory that is "active"
+            const memories = document.querySelectorAll('.memory');
+            memories.forEach((memory, i) => {
+                if (isMemoryActive(memory, i)) {
+                    memory.classList.add('visible');
+                } else {
+                    memory.classList.remove('visible');
+                }
+            });
+            // Promise cards animation
+            document.querySelectorAll('.promise-card').forEach(card => {
+                if (elementInViewport(card)) {
+                    card.classList.add('visible');
+                }
+            });
+            // Challenge text animation
+            const challengeText = document.querySelector('.challenge-text');
+            if (elementInViewport(challengeText)) {
+                challengeText.style.opacity = 1;
+                challengeText.style.transform = 'translateY(0)';
+            }
+        }
+
+        // 1) Check if #challenges is in viewport
+        function isChallengesInView() {
+            const section = document.querySelector('#challenges');
+            const rect = section.getBoundingClientRect();
+            return (
+                rect.top < window.innerHeight &&
+                rect.bottom >= 0
+            );
+        }
+
+        // 2) If in view, fade paragraphs one by one
+        let challengesActivated = false;
+        function revealChallengeParagraphs() {
+            if (!challengesActivated && isChallengesInView()) {
+                challengesActivated = true;
+
+                const paragraphs = document.querySelectorAll('.challenge-paragraph');
+                let idx = 0;
+
+                function showNextParagraph() {
+                    if (idx < paragraphs.length) {
+                        paragraphs[idx].classList.add('visible');
+                        idx++;
+                        // Show each paragraph after a delay (e.g., 1.5s)
+                        setTimeout(showNextParagraph, 1500);
+                    }
+                }
+
+                showNextParagraph();
+            }
+        }
+
+        // 3) Attach to scroll event
+        window.addEventListener('scroll', revealChallengeParagraphs);
+
+        // 4) Also call once on load, in case the user is already scrolled
+        window.addEventListener('load', revealChallengeParagraphs);
+
+        window.addEventListener('scroll', handleScroll);
+
+        function initPromisesCarousel() {
+            const promises = [
+                "I promise—one day, you'll wake up, and I'll be there. No more waiting, no more distance. Just us.",
+                "I promise—one day, we won't have to count days apart. Our days will be filled with togetherness, not longing.",
+                "I promise—one day, my kisses won't be sent, but felt. Not through texts, not through screens, but real, against your skin.",
+                "I promise—this is not just a love story. This is our forever. And I will write every chapter with you.",
+                "I promise—no matter what happens, no matter where life takes us, you will always have me, my love.",
+                "I promise—when that day comes, when this distance disappears, I will hold you so tightly that every moment we spent apart will melt away.",
+                "I promise—you will never have to wonder if you are loved. Because every second of every day, you will know it, feel it, and live it.",
+                "I promise—there is no ending to this. Only beginnings. Only us, building our forever, side by side."
+            ];
+
+            const track = document.querySelector('.carousel-track');
+
+            // Create initial boxes
+            promises.forEach(promise => {
+                const box = document.createElement('div');
+                box.className = 'promise-box';
+                box.textContent = promise;
+                track.appendChild(box);
+            });
+
+            // Duplicate boxes for infinite scroll
+            const boxes = [...track.children];
+            boxes.forEach(box => {
+                const clone = box.cloneNode(true);
+                track.appendChild(clone);
+            });
+        }
+
+        // Particle animation
+        function initParticles() {
+            const canvas = document.getElementById('particlesCanvas');
+            const ctx = canvas.getContext('2d');
+            let particles = [];
+
+            function resizeCanvas() {
+                canvas.width = canvas.offsetWidth;
+                canvas.height = canvas.offsetHeight;
+            }
+
+            function createParticle() {
+                return {
+                    x: Math.random() * canvas.width,
+                    y: Math.random() * canvas.height,
+                    size: Math.random() * 2 + 1,
+                    speedX: Math.random() * 2 - 1,
+                    speedY: Math.random() * 2 - 1,
+                    opacity: Math.random() * 0.5 + 0.2
+                };
+            }
+
+            function initializeParticles() {
+                particles = [];
+                for (let i = 0; i < 100; i++) {
+                    particles.push(createParticle());
+                }
+            }
+
+            function animate() {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+                particles.forEach(particle => {
+                    particle.x += particle.speedX;
+                    particle.y += particle.speedY;
+
+                    if (particle.x < 0 || particle.x > canvas.width) particle.speedX *= -1;
+                    if (particle.y < 0 || particle.y > canvas.height) particle.speedY *= -1;
+
+                    ctx.beginPath();
+                    ctx.arc(particle.x, particle.y, particle.size, 0, Math.PI * 2);
+                    ctx.fillStyle = `rgba(255, 255, 255, ${particle.opacity})`;
+                    ctx.fill();
+                });
+
+                requestAnimationFrame(animate);
+            }
+
+            window.addEventListener('resize', () => {
+                resizeCanvas();
+                initializeParticles();
+            });
+
+            resizeCanvas();
+            initializeParticles();
+            animate();
+        }
+
+        // Initialize both carousel and particles
+        document.addEventListener('DOMContentLoaded', () => {
+            initPromisesCarousel();
+            initParticles();
+        });
+
+        // Updated Final Heart Click Animation
+        document.addEventListener('DOMContentLoaded', function () {
+            const finalHeart = document.getElementById('finalHeart');
+            const finalMessage = document.getElementById('finalMessage');
+            const clickInstruction = document.querySelector('.click-instruction');
+
+            function typeWriter(element, text, speed = 50) {
+                let i = 0;
+                element.style.display = 'block';
+                element.style.opacity = '1'; // Make sure the message is visible
+
+                function type() {
+                    if (i < text.length) {
+                        element.innerHTML += text.charAt(i);
+                        i++;
+                        setTimeout(type, speed);
+                    }
+                }
+
+                element.innerHTML = '';
+                type();
+            }
+
+            if (finalHeart) {
+                finalHeart.addEventListener('click', function (e) {
+                    e.stopPropagation();
+                    console.log('Heart clicked!');
+
+                    // Hide heart and instruction
+                    finalHeart.style.display = 'none';
+                    clickInstruction.style.display = 'none';
+
+                    // Show and animate message
+                    const messageText = finalMessage.textContent.trim();
+                    finalMessage.textContent = '';
+                    finalMessage.style.display = 'block';
+                    finalMessage.style.opacity = '1'; // Ensure message is visible
+                    typeWriter(finalMessage, messageText);
+
+                    // Create heart burst effect
+                    if (typeof createHeartBurst === 'function') {
+                        createHeartBurst();
+                    }
+                });
+            }
+        });
+
+
+        // === FLOATING PARTICLES ANIMATION ===
+        function createParticles() {
+            const particlesContainer = document.querySelector('.particles');
+            const particleCount = 50;
+            for (let i = 0; i < particleCount; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+                particle.style.width = Math.random() * 5 + 'px';
+                particle.style.height = particle.style.width;
+                resetParticle(particle);
+                particlesContainer.appendChild(particle);
+            }
+        }
+
+        function resetParticle(particle) {
+            particle.style.left = Math.random() * 100 + 'vw';
+            particle.style.top = Math.random() * 100 + 'vh';
+            particle.style.opacity = 0;
+            particle.style.transform = 'translateY(0)';
+            setTimeout(() => {
+                particle.style.transition = 'all ' + (Math.random() * 3 + 2) + 's linear';
+                particle.style.opacity = Math.random() * 0.5;
+                particle.style.transform = 'translateY(-100vh)';
+            }, 100);
+            setTimeout(() => {
+                resetParticle(particle);
+            }, Math.random() * 3000 + 2000);
+        }
+
+        function createHeartBurst() {
+            const container = document.querySelector('.particles');
+            for (let i = 0; i < 30; i++) {
+                const heart = document.createElement('div');
+                heart.innerHTML = '❤️';
+                heart.style.position = 'absolute';
+                heart.style.left = '50%';
+                heart.style.top = '50%';
+                heart.style.fontSize = '20px';
+                heart.style.transform = 'translate(-50%, -50%)';
+                heart.style.pointerEvents = 'none';
+                container.appendChild(heart);
+
+                const angle = (i / 30) * Math.PI * 2;
+                const velocity = 10;
+                const vx = Math.cos(angle) * velocity;
+                const vy = Math.sin(angle) * velocity;
+                let x = 0;
+                let y = 0;
+                let opacity = 1;
+
+                const animate = () => {
+                    x += vx;
+                    y += vy;
+                    opacity -= 0.02;
+                    heart.style.transform = `translate(calc(-50% + ${x}px), calc(-50% + ${y}px))`;
+                    heart.style.opacity = opacity;
+                    if (opacity > 0) {
+                        requestAnimationFrame(animate);
+                    } else {
+                        container.removeChild(heart);
+                    }
+                };
+                requestAnimationFrame(animate);
+            }
+        }
+
+        // Make sure to call createParticles on load
+        window.addEventListener('load', createParticles);
+
+
+        // === SCROLL PROGRESS BAR ===
+        const progressBar = document.createElement('div');
+        progressBar.style.cssText = `
+      position: fixed;
+      top: 0;
+      left: 0;
+      height: 3px;
+      background: linear-gradient(to right, #ffb6c1, #ff69b4);
+      z-index: 1000;
+      transition: width 0.2s ease;
+    `;
+        document.body.appendChild(progressBar);
+        window.addEventListener('scroll', () => {
+            const scrollPercent =
+                (window.scrollY / (document.documentElement.scrollHeight - window.innerHeight)) * 100;
+            progressBar.style.width = scrollPercent + '%';
+        });
+
+        // === LOADING SCREEN ===
+        const loader = document.createElement('div');
+        loader.style.cssText = `
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: #1a0f1f;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 2000;
+      transition: opacity 1s ease;
+    `;
+        loader.innerHTML = '<div style="color: #ffb6c1; font-size: 24px;">Loading our love story...</div>';
+        document.body.appendChild(loader);
+        window.addEventListener('load', () => {
+            setTimeout(() => {
+                loader.style.opacity = '0';
+                setTimeout(() => {
+                    loader.remove();
+                }, 1000);
+            }, 1500);
+        });
+
+        // === MOBILE TOUCH SUPPORT FOR SCROLL ===
+        let touchStartY = 0;
+        document.addEventListener('touchstart', (e) => {
+            touchStartY = e.touches[0].clientY;
+        });
+        document.addEventListener('touchmove', (e) => {
+            const touchY = e.touches[0].clientY;
+            const diff = touchStartY - touchY;
+            if (Math.abs(diff) > 50) {
+                handleScroll();
+            }
+        });
+
+        window.addEventListener('click', function() {
+            const audio = document.getElementById('backgroundAudio');
+            if (audio.paused) {
+              audio.play().then(() => {
+                console.log("Audio started playing.");
+              }).catch((error) => {
+                console.error("Error playing audio:", error);
+              });
+            }
+        });
+        
+        // Mute toggle button event listener.
+          document.getElementById('muteButton').addEventListener('click', function(e){
+            e.stopPropagation();
+            const audio = document.getElementById('backgroundAudio');
+            audio.muted = !audio.muted;
+            this.textContent = audio.muted ? '🔇' : '🔊';
+        });
+        
+    </script>
+</body>
+
+</html>
